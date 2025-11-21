@@ -1,17 +1,17 @@
 """
-Página de simulación de la Ley de Enfriamiento de Newton.
+Página de simulación de la Ley de Enfriamiento de Newton - Versión Educativa Mejorada.
 """
 
 import tkinter as tk
-from tkinter import ttk
-from utils.styles import COLORS, FONTS, DIMENSIONS
-from utils.graph_helper import GraphCanvas
+import numpy as np
+from utils.simulador_base import SimuladorBasePage
 from utils.simulator import NewtonCoolingSimulator
+from utils.styles import COLORS
 
 
-class NewtonPage(tk.Frame):
+class NewtonPage(SimuladorBasePage):
     """
-    Página para simular la Ley de Enfriamiento de Newton.
+    Página para simular la Ley de Enfriamiento de Newton con componentes educativos.
     Ecuación: dT/dt = -k(T - T_ambiente)
     """
     
@@ -22,228 +22,178 @@ class NewtonPage(tk.Frame):
         Args:
             parent: Widget padre
         """
-        super().__init__(parent, bg=COLORS['content_bg'])
+        # Inicializar clase base
+        super().__init__(parent, "Ley de Enfriamiento de Newton", "newton")
         
-        # Variables de parámetros
-        self.T0_var = tk.DoubleVar(value=100.0)
-        self.T_env_var = tk.DoubleVar(value=25.0)
-        self.k_var = tk.DoubleVar(value=0.1)
-        self.t_max_var = tk.DoubleVar(value=50.0)
+        # Información teórica
+        info_teorica = {
+            'descripcion': (
+                "La Ley de Enfriamiento de Newton establece que la tasa de pérdida de calor de un cuerpo "
+                "es proporcional a la diferencia entre su temperatura y la temperatura del ambiente. "
+                "Este modelo describe procesos de enfriamiento y calentamiento en sistemas donde la "
+                "transferencia de calor es por convección y radiación. La solución es una función exponencial "
+                "decreciente que tiende asintóticamente a la temperatura ambiente."
+            ),
+            'aplicaciones': [
+                "Forense: Estimación del tiempo de muerte mediante temperatura corporal",
+                "Industria alimentaria: Control de enfriamiento de productos",
+                "Meteorología: Predicción de enfriamiento nocturno",
+                "Ingeniería térmica: Diseño de sistemas de enfriamiento",
+                "Medicina: Hipotermia terapéutica controlada"
+            ]
+        }
         
-        self.create_widgets()
+        ecuaciones = [
+            "dT/dt = -k(T - T_amb)",
+            "",
+            "Solución analítica:",
+            "T(t) = T_amb + (T₀ - T_amb) × e^(-kt)",
+            "",
+            "Donde:",
+            "  T(t)  = Temperatura en el tiempo t",
+            "  T₀    = Temperatura inicial",
+            "  T_amb = Temperatura ambiente",
+            "  k     = Constante de enfriamiento (depende del material y condiciones)",
+            "  t     = Tiempo"
+        ]
+        
+        # Configuración de parámetros con sliders
+        parametros_config = {
+            'T0': {
+                'label': 'Temperatura Inicial (T₀)',
+                'min': 0,
+                'max': 200,
+                'default': 100,
+                'resolution': 1,
+                'descripcion': 'Temperatura inicial del objeto en °C'
+            },
+            'T_env': {
+                'label': 'Temperatura Ambiente (T_amb)',
+                'min': -20,
+                'max': 50,
+                'default': 25,
+                'resolution': 0.5,
+                'descripcion': 'Temperatura del entorno en °C'
+            },
+            'k': {
+                'label': 'Constante de Enfriamiento (k)',
+                'min': 0.01,
+                'max': 1.0,
+                'default': 0.1,
+                'resolution': 0.01,
+                'descripcion': 'Mayor k = enfriamiento más rápido'
+            },
+            't_max': {
+                'label': 'Tiempo de Simulación',
+                'min': 10,
+                'max': 200,
+                'default': 50,
+                'resolution': 5,
+                'descripcion': 'Duración de la simulación en minutos'
+            }
+        }
+        
+        # Crear layout
+        self.create_layout(info_teorica, ecuaciones, parametros_config)
     
-    def create_widgets(self):
-        """Crea los widgets de la página."""
-        # Contenedor principal
-        main_container = tk.Frame(self, bg=COLORS['content_bg'])
-        main_container.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
-        
-        # Configurar grid
-        main_container.grid_columnconfigure(1, weight=1)
-        main_container.grid_rowconfigure(0, weight=1)
-        
-        # Panel de controles (izquierda)
-        self.create_control_panel(main_container)
-        
-        # Panel de gráfico (derecha)
-        self.create_graph_panel(main_container)
-    
-    def create_control_panel(self, parent):
-        """Crea el panel de controles."""
-        control_frame = tk.Frame(parent, bg=COLORS['header'], relief=tk.RAISED, borderwidth=2)
-        control_frame.grid(row=0, column=0, sticky="ns", padx=(0, 10))
-        
-        # Título del panel
-        title = tk.Label(
-            control_frame,
-            text="⚙️ Parámetros",
-            font=FONTS['section_title'],
-            bg=COLORS['header'],
-            fg=COLORS['text_dark']
-        )
-        title.pack(pady=(15, 20), padx=20)
-        
-        # Temperatura inicial
-        self.create_parameter_control(
-            control_frame,
-            "Temperatura Inicial (°C)",
-            self.T0_var,
-            0, 200, 1
-        )
-        
-        # Temperatura ambiente
-        self.create_parameter_control(
-            control_frame,
-            "Temperatura Ambiente (°C)",
-            self.T_env_var,
-            0, 50, 0.5
-        )
-        
-        # Constante k
-        self.create_parameter_control(
-            control_frame,
-            "Constante k (enfriamiento)",
-            self.k_var,
-            0.01, 1.0, 0.01
-        )
-        
-        # Tiempo máximo
-        self.create_parameter_control(
-            control_frame,
-            "Tiempo Máximo (min)",
-            self.t_max_var,
-            10, 200, 5
-        )
-        
-        # Botones
-        button_frame = tk.Frame(control_frame, bg=COLORS['header'])
-        button_frame.pack(pady=30, padx=20, fill=tk.X)
-        
-        simulate_btn = tk.Button(
-            button_frame,
-            text="▶ Ejecutar Simulación",
-            font=FONTS['button'],
-            bg=COLORS['success'],
-            fg='white',
-            cursor="hand2",
-            command=self.run_simulation,
-            pady=10
-        )
-        simulate_btn.pack(fill=tk.X, pady=(0, 10))
-        
-        clear_btn = tk.Button(
-            button_frame,
-            text="🗑️ Limpiar Gráfico",
-            font=FONTS['button'],
-            bg=COLORS['danger'],
-            fg='white',
-            cursor="hand2",
-            command=self.clear_graph,
-            pady=10
-        )
-        clear_btn.pack(fill=tk.X)
-        
-        # Información del modelo
-        info_frame = tk.Frame(control_frame, bg='white', relief=tk.SUNKEN, borderwidth=1)
-        info_frame.pack(pady=20, padx=20, fill=tk.BOTH)
-        
-        info_title = tk.Label(
-            info_frame,
-            text="📋 Ecuación",
-            font=FONTS['label'],
-            bg='white',
-            fg=COLORS['text_dark']
-        )
-        info_title.pack(pady=(10, 5))
-        
-        equation = tk.Label(
-            info_frame,
-            text="dT/dt = -k(T - T_amb)",
-            font=('Courier New', 11, 'bold'),
-            bg='white',
-            fg=COLORS['accent']
-        )
-        equation.pack(pady=(0, 10))
-    
-    def create_parameter_control(self, parent, label_text, variable, min_val, max_val, resolution):
-        """
-        Crea un control de parámetro con slider y valor.
-        
-        Args:
-            parent: Widget padre
-            label_text: Texto de la etiqueta
-            variable: Variable de Tkinter asociada
-            min_val: Valor mínimo del slider
-            max_val: Valor máximo del slider
-            resolution: Resolución del slider
-        """
-        container = tk.Frame(parent, bg=COLORS['header'])
-        container.pack(pady=10, padx=20, fill=tk.X)
-        
-        # Etiqueta
-        label = tk.Label(
-            container,
-            text=label_text,
-            font=FONTS['label'],
-            bg=COLORS['header'],
-            fg=COLORS['text_dark']
-        )
-        label.pack(anchor='w')
-        
-        # Frame para slider y valor
-        slider_frame = tk.Frame(container, bg=COLORS['header'])
-        slider_frame.pack(fill=tk.X, pady=(5, 0))
-        
-        # Slider
-        slider = ttk.Scale(
-            slider_frame,
-            from_=min_val,
-            to=max_val,
-            variable=variable,
-            orient=tk.HORIZONTAL,
-            length=DIMENSIONS['slider_length']
-        )
-        slider.pack(side=tk.LEFT, fill=tk.X, expand=True)
-        
-        # Valor actual
-        value_label = tk.Label(
-            slider_frame,
-            textvariable=variable,
-            font=FONTS['value'],
-            bg=COLORS['header'],
-            fg=COLORS['accent'],
-            width=8
-        )
-        value_label.pack(side=tk.LEFT, padx=(10, 0))
-    
-    def create_graph_panel(self, parent):
-        """Crea el panel del gráfico."""
-        graph_frame = tk.Frame(parent, bg='white', relief=tk.SUNKEN, borderwidth=2)
-        graph_frame.grid(row=0, column=1, sticky="nsew")
-        
-        # Canvas de Matplotlib
-        self.graph = GraphCanvas(graph_frame, figsize=(9, 6))
-        self.graph.get_widget().pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
-        
-        # Configuración inicial del gráfico
-        self.graph.set_labels(
-            xlabel='Tiempo (minutos)',
-            ylabel='Temperatura (°C)',
-            title='Ley de Enfriamiento de Newton'
-        )
-        self.graph.grid(True)
-    
-    def run_simulation(self):
+    def ejecutar_simulacion(self):
         """Ejecuta la simulación del enfriamiento de Newton."""
         # Obtener parámetros
-        T0 = self.T0_var.get()
-        T_env = self.T_env_var.get()
-        k = self.k_var.get()
-        t_max = self.t_max_var.get()
+        T0 = self.parametros['T0']
+        T_env = self.parametros['T_env']
+        k = self.parametros['k']
+        t_max = self.parametros['t_max']
+        
+        # Validaciones
+        if T0 == T_env:
+            self.update_analysis(
+                "⚠️ ADVERTENCIA: La temperatura inicial es igual a la ambiente.\n"
+                "No habrá cambio de temperatura. El sistema ya está en equilibrio térmico."
+            )
+            return
         
         # Simular
         t, T = NewtonCoolingSimulator.simulate(T0, T_env, k, t_max)
         
         # Graficar
         self.graph.clear()
-        self.graph.plot(t, T, 'b-', linewidth=2, label=f'T₀={T0}°C, k={k}')
-        self.graph.ax.axhline(y=T_env, color='r', linestyle='--', linewidth=1.5, 
-                              label=f'T_ambiente={T_env}°C')
+        
+        # Curva de temperatura
+        color = 'b' if T0 > T_env else 'r'
+        self.graph.plot(t, T, color=color, linewidth=2.5, 
+                       label=f'T(t) con k={k}')
+        
+        # Línea de temperatura ambiente
+        self.graph.ax.axhline(y=T_env, color='green', linestyle='--', 
+                             linewidth=2, alpha=0.7, label=f'T_ambiente = {T_env}°C')
+        
+        # Línea de temperatura inicial
+        self.graph.ax.axhline(y=T0, color='orange', linestyle=':', 
+                             linewidth=1.5, alpha=0.5, label=f'T₀ = {T0}°C')
+        
+        # Marcar constante de tiempo (1/k)
+        tau = 1/k  # Constante de tiempo
+        if tau < t_max:
+            T_tau = T_env + (T0 - T_env) * np.exp(-1)
+            self.graph.ax.plot(tau, T_tau, 'ro', markersize=10, 
+                              label=f'τ = {tau:.1f} min (63% del cambio)')
+        
         self.graph.set_labels(
             xlabel='Tiempo (minutos)',
             ylabel='Temperatura (°C)',
-            title='Ley de Enfriamiento de Newton'
+            title=f'Enfriamiento de Newton: {"Enfriamiento" if T0 > T_env else "Calentamiento"}'
         )
-        self.graph.grid(True)
+        self.graph.grid(True, alpha=0.3)
         self.graph.legend()
         self.graph.tight_layout()
+        
+        # Análisis cualitativo
+        self.generar_analisis(T0, T_env, k, t, T)
     
-    def clear_graph(self):
-        """Limpia el gráfico."""
-        self.graph.clear()
-        self.graph.set_labels(
-            xlabel='Tiempo (minutos)',
-            ylabel='Temperatura (°C)',
-            title='Ley de Enfriamiento de Newton'
-        )
-        self.graph.grid(True)
+    def generar_analisis(self, T0, T_env, k, t, T):
+        """Genera el análisis cualitativo del comportamiento."""
+        proceso = "enfriamiento" if T0 > T_env else "calentamiento"
+        tau = 1/k
+        
+        # Calcular tiempo para alcanzar cierta cercanía a T_env
+        diferencia_inicial = abs(T0 - T_env)
+        T_95 = T_env + 0.05 * (T0 - T_env)  # 95% del cambio
+        t_95 = -np.log(0.05) / k  # Aproximadamente 3*tau
+        
+        # Temperatura final simulada
+        T_final = T[-1]
+        diferencia_final = abs(T_final - T_env)
+        porcentaje_completado = (1 - diferencia_final/diferencia_inicial) * 100
+        
+        analisis = f"""
+🔍 ANÁLISIS DEL COMPORTAMIENTO:
+
+📊 Tipo de proceso: {proceso.upper()}
+   - Temperatura inicial: {T0}°C
+   - Temperatura ambiente: {T_env}°C
+   - Cambio total esperado: {diferencia_inicial}°C
+
+⏱️ DINÁMICA TEMPORAL:
+   - Constante de tiempo (τ = 1/k): {tau:.2f} minutos
+   - Después de τ: Se completa el 63.2% del cambio
+   - Después de 3τ: Se completa el 95% del cambio (~{t_95:.1f} min)
+   - Después de 5τ: Se completa el 99.3% del cambio (~{5*tau:.1f} min)
+
+📈 ESTADO ACTUAL:
+   - Temperatura al final de la simulación: {T_final:.2f}°C
+   - Porcentaje de cambio completado: {porcentaje_completado:.1f}%
+   - Diferencia con el equilibrio: {diferencia_final:.2f}°C
+
+💡 INTERPRETACIÓN:
+   - Velocidad de {proceso}: {"Rápida" if k > 0.2 else "Moderada" if k > 0.05 else "Lenta"} (k = {k})
+   - Comportamiento: Exponencial decreciente
+   - Tendencia asintótica: T(t) → {T_env}°C cuando t → ∞
+   
+⚙️ EFECTO DE LOS PARÁMETROS:
+   - Aumentar k → {proceso} más rápido
+   - Mayor diferencia (T₀ - T_amb) → Mayor tasa inicial de cambio
+   - La temperatura NUNCA alcanza exactamente T_amb (solo asintóticamente)
+        """
+        
+        self.update_analysis(analisis.strip())
+

@@ -80,19 +80,31 @@ class SimulatorApp:
         self.nav_buttons = {}
         nav_items = [
             ("🏠 Inicio", "inicio"),
+            ("🧪 Laboratorio", "laboratorio"),
+            ("", "separator"),  # Separador visual
             ("🌡️ Enfriamiento Newton", "newton"),
             ("📈 Van der Pol", "van_der_pol"),
             ("🦠 Modelo SIR", "sir"),
             ("⚡ Circuito RLC", "rlc"),
-            ("🌀 Sistema Lorenz", "lorenz")
+            ("🌀 Sistema Lorenz", "lorenz"),
+            ("🔄 Bifurcación Hopf", "hopf")
         ]
         
         for text, page_id in nav_items:
+            if page_id == "separator":
+                # Agregar un separador visual
+                sep = tk.Frame(sidebar, height=2, bg=COLORS['text_muted'])
+                sep.pack(fill=tk.X, padx=20, pady=8)
+                continue
+            
+            # Destacar botón de Laboratorio con color especial
+            bg_color = COLORS['accent'] if page_id == "laboratorio" else COLORS['button']
+            
             btn = tk.Button(
                 sidebar,
                 text=text,
                 font=FONTS['nav_button'],
-                bg=COLORS['button'],
+                bg=bg_color,
                 fg=COLORS['text_light'],
                 activebackground=COLORS['button_active'],
                 activeforeground=COLORS['text_light'],

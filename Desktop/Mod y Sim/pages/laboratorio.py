@@ -7,6 +7,7 @@ from tkinter import ttk, scrolledtext, messagebox
 from utils.styles import COLORS, FONTS
 from utils.ejercicio_generator import EjercicioGenerator
 from utils.evaluador import Evaluador
+from utils.ejercicio_state import EjercicioState
 from utils.simulator import (
     NewtonCoolingSimulator, VanDerPolSimulator, SIRSimulator,
     HopfSimulator, LogisticSimulator, VerhulstSimulator,
@@ -30,8 +31,12 @@ class LaboratorioPage(tk.Frame):
         self.ejercicio_actual = None
         self.respuestas = {}
         self.simulador_actual = None
+        self.nav_callback = None  # Para navegación a simuladores
         
         self.create_widgets()
+        
+        # Cargar ejercicio si existe uno guardado
+        self.cargar_ejercicio_guardado()
     
     def create_widgets(self):
         """Crea los widgets de la página."""
@@ -39,18 +44,32 @@ class LaboratorioPage(tk.Frame):
         main_container = tk.Frame(self, bg=COLORS['content_bg'])
         main_container.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
         
-        # Título
-        title_frame = tk.Frame(main_container, bg=COLORS['accent'], height=60)
+        # Título con indicador de ejercicio activo
+        title_frame = tk.Frame(main_container, bg=COLORS['accent'], height=80)
         title_frame.pack(fill=tk.X, pady=(0, 15))
         title_frame.pack_propagate(False)
         
+        title_container = tk.Frame(title_frame, bg=COLORS['accent'])
+        title_container.pack(expand=True, fill=tk.BOTH, padx=20)
+        
         tk.Label(
-            title_frame,
+            title_container,
             text="🧪 PRÁCTICA DE LABORATORIO",
             font=('Segoe UI', 20, 'bold'),
             bg=COLORS['accent'],
             fg='white'
-        ).pack(expand=True)
+        ).pack(side=tk.LEFT, expand=True)
+        
+        # Indicador de ejercicio activo
+        self.ejercicio_indicator = tk.Label(
+            title_container,
+            text="",
+            font=('Segoe UI', 10),
+            bg=COLORS['accent'],
+            fg='white',
+            anchor='e'
+        )
+        self.ejercicio_indicator.pack(side=tk.RIGHT, padx=10)
         
         # Frame superior: Generador de ejercicios
         self.create_generator_panel(main_container)
@@ -295,6 +314,9 @@ class LaboratorioPage(tk.Frame):
             self.ejercicio_actual = self.generator.generar_ejercicio(sistema_id, dificultad)
             self.respuestas = {}
             
+            # Guardar en el estado global
+            EjercicioState.set_ejercicio(self.ejercicio_actual)
+            
             # Actualizar instrucciones
             self.mostrar_instrucciones()
             
@@ -308,6 +330,9 @@ class LaboratorioPage(tk.Frame):
             self.btn_simular.config(state='normal')
             self.btn_evaluar.config(state='normal')
             
+            # Actualizar indicador
+            self.actualizar_indicador_ejercicio()
+            
             # Limpiar resultados
             self.resultados_text.delete('1.0', tk.END)
             self.resultados_text.insert('1.0', 
@@ -318,7 +343,9 @@ class LaboratorioPage(tk.Frame):
                 "Ejercicio Generado",
                 f"Nuevo ejercicio de {self.ejercicio_actual['titulo']} generado.\n"
                 f"Dificultad: {dificultad.upper()}\n\n"
-                "Revisa las instrucciones en la pestaña correspondiente."
+                "Revisa las instrucciones en la pestaña correspondiente.\n\n"
+                "💡 Puedes explorar el simulador individual desde el menú lateral\n"
+                "y retomar este ejercicio cuando regreses al Laboratorio."
             )
             
         except Exception as e:
@@ -597,5 +624,58 @@ class LaboratorioPage(tk.Frame):
                 f"No has alcanzado el mínimo para aprobar\n\n"
                 f"Puntuación: {resultados['puntuacion']}/{resultados['puntuacion_maxima']}\n"
                 f"Porcentaje: {resultados['porcentaje']:.1f}%\n\n"
-                "Revisa las sugerencias de mejora."
+                f"Revisa las sugerencias de mejora."
             )
+    
+    def cargar_ejercicio_guardado(self):
+        """Carga el ejercicio guardado si existe."""
+        ejercicio_guardado = EjercicioState.get_ejercicio()
+        
+        if ejercicio_guardado:
+            self.ejercicio_actual = ejercicio_guardado
+            
+            # Restaurar interfaz
+            self.mostrar_instrucciones()
+            self.mostrar_parametros()
+            self.mostrar_preguntas()
+            
+            # Habilitar botones
+            if hasattr(self, 'btn_simular'):
+                self.btn_simular.config(state='normal')
+            if hasattr(self, 'btn_evaluar'):
+                self.btn_evaluar.config(state='normal')
+            
+            # Actualizar indicador
+            if hasattr(self, 'ejercicio_indicator'):
+                self.actualizar_indicador_ejercicio()
+            
+            # Restaurar respuestas guardadas
+            respuestas_guardadas = EjercicioState.get_respuestas()
+            for pregunta_id, respuesta in respuestas_guardadas.items():
+                if pregunta_id in self.respuestas:
+                    widget = self.respuestas[pregunta_id]
+                    if isinstance(widget, tk.Entry):
+                        widget.delete(0, tk.END)
+                        widget.insert(0, str(respuesta))
+                    elif isinstance(widget, tk.IntVar):
+                        widget.set(respuesta)
+    
+    def actualizar_indicador_ejercicio(self):
+        """Actualiza el indicador de ejercicio activo."""
+        if self.ejercicio_actual:
+            info = EjercicioState.get_info_ejercicio()
+            self.ejercicio_indicator.config(
+                text=f"📋 Ejercicio activo: {info}",
+                fg='#90EE90'  # Verde claro
+            )
+        else:
+            self.ejercicio_indicator.config(text="", fg='white')
+    
+    def set_navigation_callback(self, callback):
+        """
+        Establece el callback de navegación.
+        
+        Args:
+            callback: Función para navegar a otras páginas
+        """
+        self.nav_callback = callback

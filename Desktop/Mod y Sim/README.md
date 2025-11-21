@@ -1,60 +1,236 @@
 # Simulador de Sistemas Dinámicos 🎯
 
-Aplicación frontend desarrollada en Python con Tkinter para la simulación y visualización de sistemas dinámicos mediante resolución numérica de ecuaciones diferenciales ordinarias (EDOs).
+Aplicación educativa interactiva desarrollada en Python con Tkinter para la simulación, visualización y aprendizaje de sistemas dinámicos. Incluye un modo de **Laboratorio Educativo** con generación automática de ejercicios, evaluación y feedback personalizado.
 
 ## 📋 Descripción
 
-Este simulador permite explorar el comportamiento de diferentes sistemas dinámicos a través de una interfaz gráfica intuitiva. Cada sistema incluye controles interactivos para ajustar parámetros y visualizar los resultados en tiempo real.
+Este simulador permite explorar el comportamiento de diferentes sistemas dinámicos a través de una interfaz gráfica intuitiva y educativa. Cada sistema incluye:
+- 📚 **Información teórica completa** con ecuaciones y contexto físico
+- 🎛️ **Sliders interactivos** con descripciones de cada parámetro
+- 📊 **Visualizaciones mejoradas** con análisis cualitativo
+- 🧪 **Modo Laboratorio** con ejercicios automáticos y evaluación
+- 💾 **Persistencia de ejercicios** para retomar prácticas
 
 ## 🔬 Sistemas Dinámicos Disponibles
 
+### Sistemas Clásicos
+
 1. **Ley de Enfriamiento de Newton** 🌡️
-   - Modelo de transferencia de calor
+   - Modelo de transferencia de calor por convección
    - Ecuación: `dT/dt = -k(T - T_ambiente)`
+   - Aplicaciones: Forense, industria alimentaria, meteorología
+   - **✨ MEJORADO**: Información educativa completa, análisis cualitativo, carga de parámetros de ejercicios
 
 2. **Oscilador de Van der Pol** 📈
-   - Sistema no lineal con oscilaciones
-   - Exhibe ciclos límite
+   - Sistema no lineal con oscilaciones autosostenidas
+   - Exhibe ciclos límite estables
+   - Aplicaciones: Circuitos electrónicos, biología, ingeniería
 
 3. **Modelo Epidemiológico SIR** 🦠
    - Propagación de enfermedades infecciosas
    - Compartimentos: Susceptibles, Infectados, Recuperados
+   - Aplicaciones: Salud pública, predicción de epidemias
 
 4. **Circuito RLC** ⚡
-   - Circuito eléctrico serie
+   - Circuito eléctrico serie resonante
    - Resistencia, Inductancia y Capacitancia
+   - Aplicaciones: Filtros, telecomunicaciones, electrónica
 
 5. **Sistema de Lorenz** 🌀
    - Sistema caótico tridimensional
-   - Atractor extraño famoso
+   - Atractor extraño famoso ("Efecto Mariposa")
+   - Aplicaciones: Meteorología, física del caos
+
+### Sistemas Avanzados
+
+6. **Bifurcación de Hopf** 🔄
+   - Transición entre punto fijo y ciclo límite
+   - Parámetro de bifurcación μ
+   - Aplicaciones: Teoría de bifurcaciones, dinámica no lineal
+
+7. **Modelo Logístico** 📊
+   - Crecimiento poblacional con capacidad de carga
+   - Ecuación: `dN/dt = rN(1 - N/K)`
+   - Aplicaciones: Ecología, demografía, economía
+
+8. **Mapa de Verhulst** 🔢
+   - Sistema dinámico discreto caótico
+   - Ecuación: `x_{n+1} = rx_n(1 - x_n)`
+   - Aplicaciones: Teoría del caos, dinámica poblacional
+
+9. **Órbitas Espaciales** 🛰️
+   - Mecánica orbital según leyes de Kepler
+   - Ecuación: `d²r/dt² = -μr/|r|³`
+   - Aplicaciones: Astrodinámica, misiones espaciales
+
+10. **Atractor de Rössler (Mariposa)** 🦋
+    - Sistema caótico 3D alternativo a Lorenz
+    - Estructura de atractor en forma de mariposa
+    - Aplicaciones: Teoría del caos, sistemas dinámicos
+
+11. **Sistema Masa-Resorte-Amortiguador** 🔧
+    - Oscilador mecánico con amortiguamiento
+    - Ecuación: `m(d²x/dt²) + c(dx/dt) + kx = 0`
+    - Aplicaciones: Mecánica, vibraciones, ingeniería civil
 
 ## 📁 Estructura del Proyecto
 
 ```
 Mod y Sim/
 │
-├── main.py                 # Punto de entrada de la aplicación
+├── main.py                     # Punto de entrada de la aplicación
 │
-├── pages/                  # Páginas de cada sistema dinámico
+├── pages/                      # Páginas de cada sistema dinámico
 │   ├── __init__.py
-│   ├── inicio.py          # Página de bienvenida
-│   ├── newton.py          # Enfriamiento de Newton
-│   ├── van_der_pol.py     # Oscilador Van der Pol
-│   ├── sir.py             # Modelo SIR
-│   ├── rlc.py             # Circuito RLC
-│   └── lorenz.py          # Sistema de Lorenz
+│   ├── inicio.py              # Página de bienvenida
+│   ├── laboratorio.py         # 🧪 Modo laboratorio educativo
+│   ├── newton.py              # ✨ Enfriamiento de Newton (MEJORADO)
+│   ├── van_der_pol.py         # Oscilador Van der Pol
+│   ├── sir.py                 # Modelo SIR
+│   ├── rlc.py                 # Circuito RLC
+│   ├── lorenz.py              # Sistema de Lorenz
+│   └── hopf.py                # Bifurcación de Hopf
 │
-├── utils/                  # Utilidades y helpers
+├── utils/                      # Utilidades y helpers
 │   ├── __init__.py
-│   ├── styles.py          # Configuración de estilos y colores
-│   ├── navigation.py      # Gestor de navegación entre páginas
-│   ├── graph_helper.py    # Integración Matplotlib-Tkinter
-│   └── simulator.py       # Simuladores numéricos (SciPy)
+│   ├── styles.py              # Configuración de estilos y colores
+│   ├── navigation.py          # Gestor de navegación entre páginas
+│   ├── graph_helper.py        # Integración Matplotlib-Tkinter
+│   ├── simulator.py           # Simuladores numéricos (SciPy) - 11 sistemas
+│   ├── simulador_base.py      # 🆕 Clase base mejorada para páginas educativas
+│   ├── ejercicio_generator.py # 🆕 Generador automático de ejercicios
+│   ├── evaluador.py           # 🆕 Sistema de evaluación y feedback
+│   └── ejercicio_state.py     # 🆕 Gestión de estado de ejercicios
 │
-├── assets/                 # Recursos (imágenes, etc.)
+├── assets/                     # Recursos (imágenes, etc.)
 │
-├── requirements.txt        # Dependencias del proyecto
-└── README.md              # Este archivo
+├── requirements.txt            # Dependencias del proyecto
+├── README.md                  # Este archivo
+└── GUIA_LABORATORIO.md        # 🆕 Guía completa del modo laboratorio
+```
+
+## 🎓 Modo Laboratorio Educativo
+
+### Características Principales
+
+#### 🎲 Generación Automática de Ejercicios
+- **11 sistemas dinámicos** disponibles
+- **3 niveles de dificultad**: Principiante, Intermedio, Avanzado
+- Parámetros aleatorios para ejercicios únicos
+- Objetivos de aprendizaje claros
+- Instrucciones paso a paso
+
+#### 📝 Tipos de Preguntas
+- **Preguntas Numéricas**: Requieren cálculos basados en la simulación
+- **Opción Múltiple**: Conceptos teóricos y análisis cualitativo
+- Tolerancia de error configurable
+- Unidades específicas por sistema
+
+#### ✅ Evaluación Automática
+- Calificación instantánea (10 puntos por pregunta)
+- Aprobación con 70% o más
+- Feedback detallado por cada pregunta
+- Sugerencias personalizadas de mejora
+- Reportes completos de laboratorio
+
+#### 💾 Persistencia de Ejercicios
+- Los ejercicios se guardan automáticamente
+- Navega entre simuladores sin perder el ejercicio
+- **Banner de ejercicio activo** en simuladores
+- **Carga de parámetros** con un click
+- Retoma donde dejaste
+
+### Workflow Educativo
+
+1. **Generar Ejercicio**
+   - Selecciona sistema y dificultad
+   - Genera ejercicio con parámetros aleatorios
+
+2. **Leer Instrucciones**
+   - Objetivos de aprendizaje
+   - Instrucciones paso a paso
+   - Análisis requerido
+
+3. **Ejecutar Simulación**
+   - Parámetros del ejercicio mostrados
+   - Simulación con gráficos
+   - Análisis cualitativo automático
+
+4. **Explorar Libremente** ⭐ NUEVO
+   - Navega a simuladores individuales
+   - Ejercicio permanece guardado
+   - Carga parámetros del ejercicio
+   - Experimenta con variaciones
+
+5. **Responder Preguntas**
+   - Preguntas basadas en la simulación
+   - Campos de entrada validados
+
+6. **Evaluar y Mejorar**
+   - Feedback detallado
+   - Sugerencias de estudio
+   - Genera nuevo ejercicio para practicar
+
+## ✨ Mejoras Educativas Implementadas
+
+### Páginas de Simuladores Mejoradas
+
+Cada simulador ahora incluye:
+
+#### 📚 Panel de Información Teórica (Colapsable)
+- **Descripción completa** del fenómeno físico
+- **Ecuaciones fundamentales** con notación matemática
+- **Aplicaciones prácticas** en diferentes campos
+- Contexto histórico y relevancia
+
+#### 🎛️ Controles Interactivos Mejorados
+- **Sliders con valores en tiempo real**
+- **Descripción de cada parámetro** (qué representa)
+- **Rangos educativos** (valores físicamente razonables)
+- **Entry numérico** para valores exactos
+- Sincronización bidireccional slider ↔ entry
+
+#### 🔍 Análisis Cualitativo Automático
+- Interpretación del comportamiento observado
+- Identificación de regímenes dinámicos
+- Análisis de estabilidad (sin cálculo pesado)
+- Constantes de tiempo y escalas características
+- Efecto de parámetros en el comportamiento
+
+#### 📋 Integración con Ejercicios
+- **Banner verde** cuando hay ejercicio activo
+- Botón **"Cargar Parámetros del Ejercicio"**
+- Información del ejercicio visible
+- Navegación fluida laboratorio ↔ simuladores
+
+### Ejemplo: Newton Mejorado
+
+La página de Enfriamiento de Newton ahora incluye:
+
+```python
+📚 Información Teórica:
+- Descripción del proceso físico
+- Ecuaciones: dT/dt = -k(T - T_amb) y solución analítica
+- 5 aplicaciones prácticas (forense, industria, medicina, etc.)
+
+🎛️ Parámetros con Sliders:
+- Temperatura Inicial (T₀): 0-200°C con descripción
+- Temperatura Ambiente: -20-50°C con descripción
+- Constante k: 0.01-1.0 (velocidad de enfriamiento)
+- Tiempo de simulación: 10-200 min
+
+📊 Visualización Mejorada:
+- Curva de temperatura (azul/rojo según proceso)
+- Línea de T_ambiente (verde)
+- Constante de tiempo τ marcada
+- Grid y leyendas claras
+
+🔍 Análisis Automático:
+- Tipo de proceso (enfriamiento/calentamiento)
+- Constante de tiempo τ = 1/k
+- Porcentaje de cambio completado
+- Velocidad del proceso según k
+- Interpretación física completa
 ```
 
 ## 🚀 Instalación y Ejecución
