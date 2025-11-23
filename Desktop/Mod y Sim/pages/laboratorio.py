@@ -100,6 +100,7 @@ class LaboratorioPage(tk.Frame):
         
         self.sistema_var = tk.StringVar(value='newton')
         sistemas = [
+            ('📚 EJERCICIOS CLÁSICOS', 'separator'),
             ('Enfriamiento Newton', 'newton'),
             ('Van der Pol', 'van_der_pol'),
             ('Modelo SIR', 'sir'),
@@ -110,20 +111,39 @@ class LaboratorioPage(tk.Frame):
             ('Mapa Verhulst', 'verhulst'),
             ('Órbitas Espaciales', 'orbital'),
             ('Atractor Mariposa', 'mariposa'),
-            ('Amortiguador', 'amortiguador')
+            ('Amortiguador', 'amortiguador'),
+            ('', 'separator2'),
+            ('🎓 EJERCICIOS EDUCATIVOS AVANZADOS', 'separator3'),
+            ('1. Equilibrio Sistema Logístico', 'equilibrio_logistico'),
+            ('2. Transiciones Verhulst', 'verhulst_transiciones'),
+            ('3. Análisis de Amortiguamiento', 'amortiguamiento_analisis'),
+            ('4. Ciclos Límite Van der Pol', 'ciclo_limite'),
+            ('5. Aparición Bifurcación Hopf', 'hopf_aparicion'),
+            ('6. Resonancia RLC', 'rlc_resonancia'),
+            ('7. Propagación Epidemias SIR', 'sir_propagacion'),
+            ('8. Sensibilidad Lorenz', 'lorenz_sensibilidad'),
+            ('9. Leyes de Kepler', 'orbital_kepler'),
+            ('10. Transferencia Hohmann', 'orbital_hohmann'),
+            ('11. Enfriamiento Newton', 'newton_enfriamiento'),
+            ('12. Carga Capacitor RC', 'rc_carga'),
+            ('13. Comparación Crecimiento', 'crecimiento_comparacion'),
+            ('14. Estabilidad Lineal', 'estabilidad_lineal'),
+            ('15. SIR con Vacunación', 'sir_vacunacion'),
+            ('16. Perturbaciones Orbitales', 'orbital_perturbaciones'),
+            ('17. Oscilador Forzado', 'oscilador_forzado')
         ]
         
         sistema_combo = ttk.Combobox(
             controls_frame,
             textvariable=self.sistema_var,
-            values=[s[0] for s in sistemas],
+            values=[s[0] for s in sistemas if s[1] not in ['separator', 'separator2', 'separator3']],
             state='readonly',
-            width=25
+            width=35
         )
         sistema_combo.grid(row=0, column=1, sticky='w')
         
         # Mapeo de nombres a IDs
-        self.sistema_map = {s[0]: s[1] for s in sistemas}
+        self.sistema_map = {s[0]: s[1] for s in sistemas if s[1] not in ['separator', 'separator2', 'separator3']}
         
         # Dificultad
         tk.Label(controls_frame, text="Dificultad:", font=FONTS['label'],

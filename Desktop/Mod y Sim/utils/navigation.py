@@ -9,6 +9,9 @@ from pages.van_der_pol import VanDerPolPage
 from pages.sir import SIRPage
 from pages.rlc import RLCPage
 from pages.lorenz import LorenzPage
+from pages.hopf import HopfPage
+from pages.laboratorio import LaboratorioPage
+from pages.dashboard import DashboardPage
 
 
 class NavigationManager:
@@ -54,6 +57,18 @@ class NavigationManager:
             'lorenz': {
                 'class': LorenzPage,
                 'title': 'Sistema de Lorenz (Atractor Caótico)'
+            },
+            'hopf': {
+                'class': HopfPage,
+                'title': 'Bifurcación de Hopf'
+            },
+            'laboratorio': {
+                'class': LaboratorioPage,
+                'title': 'Laboratorio de Prácticas'
+            },
+            'dashboard': {
+                'class': DashboardPage,
+                'title': 'Panel de Progreso y Estadísticas'
             }
         }
     

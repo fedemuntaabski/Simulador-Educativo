@@ -178,4 +178,5 @@ ICONS = {
     'target': '🎯',
     'lightbulb': '💡',
     'star': '⭐',
+    'time': '⏱️',
 }

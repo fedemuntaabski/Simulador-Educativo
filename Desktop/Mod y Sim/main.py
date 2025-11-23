@@ -124,6 +124,7 @@ class SimulatorApp:
         nav_items = [
             (ICONS['home'] + " Inicio", "inicio", False),
             (ICONS['lab'] + " Laboratorio", "laboratorio", True),
+            (ICONS['clipboard'] + " Dashboard", "dashboard", False),
             ("", "separator", False),  # Separador visual
             (ICONS['newton'] + " Enfriamiento Newton", "newton", False),
             (ICONS['van_der_pol'] + " Van der Pol", "van_der_pol", False),
@@ -363,6 +364,7 @@ class SimulatorApp:
         page_names = {
             'inicio': 'Inicio • Panel Principal',
             'laboratorio': 'Laboratorio • Modo Educativo',
+            'dashboard': 'Dashboard • Progreso y Estadísticas',
             'newton': 'Simuladores • Enfriamiento de Newton',
             'van_der_pol': 'Simuladores • Van der Pol',
             'sir': 'Simuladores • Modelo SIR',

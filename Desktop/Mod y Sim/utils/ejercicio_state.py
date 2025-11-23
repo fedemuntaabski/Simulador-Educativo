@@ -4,6 +4,8 @@ Permite guardar y recuperar el ejercicio activo cuando el estudiante navega.
 """
 
 
+from datetime import datetime
+
 class EjercicioState:
     """
     Singleton para gestionar el estado del ejercicio actual.
@@ -15,6 +17,7 @@ class EjercicioState:
     _respuestas_guardadas = {}
     _simulacion_ejecutada = False
     _datos_simulacion = None
+    _start_time = None
     
     def __new__(cls):
         """Implementa el patrón Singleton."""
@@ -34,6 +37,14 @@ class EjercicioState:
         cls._respuestas_guardadas = {}
         cls._simulacion_ejecutada = False
         cls._datos_simulacion = None
+        cls._start_time = datetime.now()
+    
+    @classmethod
+    def get_duration_seconds(cls):
+        """Retorna la duración en segundos desde que inició el ejercicio."""
+        if cls._start_time:
+            return (datetime.now() - cls._start_time).total_seconds()
+        return 0.0
     
     @classmethod
     def get_ejercicio(cls):

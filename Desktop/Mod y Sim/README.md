@@ -114,11 +114,113 @@ Mod y Sim/
 ### Características Principales
 
 #### 🎲 Generación Automática de Ejercicios
-- **11 sistemas dinámicos** disponibles
+- **28 ejercicios educativos** disponibles (11 clásicos + 17 avanzados)
 - **3 niveles de dificultad**: Principiante, Intermedio, Avanzado
 - Parámetros aleatorios para ejercicios únicos
 - Objetivos de aprendizaje claros
 - Instrucciones paso a paso
+
+### 📚 Catálogo Completo de Ejercicios
+
+#### Ejercicios Clásicos (Base)
+1. **Enfriamiento de Newton** - Procesos térmicos exponenciales
+2. **Van der Pol** - Osciladores no lineales
+3. **Modelo SIR** - Epidemiología básica
+4. **Circuito RLC** - Electrónica y resonancia
+5. **Sistema Lorenz** - Teoría del caos
+6. **Bifurcación Hopf** - Transiciones de estabilidad
+7. **Modelo Logístico** - Crecimiento poblacional
+8. **Mapa de Verhulst** - Sistemas discretos
+9. **Órbitas Espaciales** - Mecánica celeste
+10. **Atractor Mariposa** - Sistemas caóticos
+11. **Amortiguadores** - Sistemas mecánicos
+
+#### 🎓 Ejercicios Educativos Avanzados (Nuevos)
+
+##### **Ejercicio 1: Estabilidad de Puntos de Equilibrio en el Sistema Logístico**
+- **Objetivo**: Comprender cómo la tasa de crecimiento y capacidad de carga afectan la evolución temporal
+- **Conceptos**: Puntos de equilibrio, convergencia, estabilidad
+- **Preguntas**: Valor de convergencia, efecto de parámetros, comportamiento oscilatorio
+
+##### **Ejercicio 2: Transiciones de Fase en el Modelo de Verhulst Discreto**
+- **Objetivo**: Explorar comportamientos complejos (ciclos, caos) mediante variación paramétrica
+- **Conceptos**: Diagrama de bifurcación, duplicación de período, ruta al caos
+- **Preguntas**: Primera bifurcación, comportamiento caótico, regiones periódicas
+
+##### **Ejercicio 3: Análisis de Amortiguamiento en Osciladores Mecánicos**
+- **Objetivo**: Clasificar regímenes de amortiguamiento
+- **Conceptos**: Subamortiguado, crítico, sobreamortiguado, factor ζ
+- **Preguntas**: Tipo de amortiguamiento, oscilaciones, retorno al equilibrio
+
+##### **Ejercicio 4: Ciclos Límite en el Oscilador de Van der Pol**
+- **Objetivo**: Identificar ciclos límite y su independencia de condiciones iniciales
+- **Conceptos**: Atractores, no linealidad, oscilaciones autosostenidas
+- **Preguntas**: Dependencia de condiciones iniciales, forma del ciclo, significado físico
+
+##### **Ejercicio 5: Aparición de Oscilaciones por Bifurcación de Hopf**
+- **Objetivo**: Observar transición de punto fijo a ciclo límite
+- **Conceptos**: Bifurcación supercrítica, valores propios, estabilidad
+- **Preguntas**: Comportamiento del sistema, valor crítico μ, crecimiento del ciclo
+
+##### **Ejercicio 6: Circuito RLC - Resonancia y Factor de Calidad**
+- **Objetivo**: Analizar respuesta en frecuencia e identificar resonancia
+- **Conceptos**: Frecuencia de resonancia, factor Q, ancho de banda
+- **Preguntas**: Frecuencia ω₀, selectividad del circuito, efecto de R
+
+##### **Ejercicio 7: Propagación de Epidemias - Modelo SIR Básico**
+- **Objetivo**: Comprender dinámica de propagación y número reproductivo R₀
+- **Conceptos**: Susceptibles, infectados, recuperados, umbral epidémico
+- **Preguntas**: Cálculo de R₀, condición de brote, decaimiento de infectados
+
+##### **Ejercicio 8: Atractor de Lorenz - Sensibilidad a Condiciones Iniciales**
+- **Objetivo**: Demostrar sensibilidad a condiciones iniciales (efecto mariposa)
+- **Conceptos**: Caos determinista, atractores extraños, divergencia exponencial
+- **Preguntas**: Divergencia de trayectorias, lóbulos del atractor, transición a caos
+
+##### **Ejercicio 9: Órbitas Planetarias - Leyes de Kepler**
+- **Objetivo**: Verificar leyes de Kepler mediante simulación
+- **Conceptos**: Órbitas elípticas, conservación de energía/momento, período orbital
+- **Preguntas**: Tipo de órbita, conservación de momento angular, tercera ley de Kepler
+
+##### **Ejercicio 10: Transferencia Orbital de Hohmann**
+- **Objetivo**: Diseñar maniobras orbitales eficientes
+- **Conceptos**: Órbita de transferencia, Δv, eficiencia energética
+- **Preguntas**: Semieje mayor, impulsos de velocidad, tiempo de transferencia
+
+##### **Ejercicio 11: Enfriamiento de un Cuerpo - Ley de Newton**
+- **Objetivo**: Aplicar ley de enfriamiento y determinar constantes térmicas
+- **Conceptos**: Constante de tiempo τ, decaimiento exponencial, aproximación asintótica
+- **Preguntas**: Fracción después de τ, tiempo de medio enfriamiento, convergencia
+
+##### **Ejercicio 12: Dinámica de Carga de un Capacitor (RC)**
+- **Objetivo**: Analizar carga/descarga de capacitores
+- **Conceptos**: Constante RC, respuesta exponencial, transientes
+- **Preguntas**: Tiempo para 95% de carga, efecto de duplicar R, corriente inicial
+
+##### **Ejercicio 13: Comparación de Modelos de Crecimiento Poblacional**
+- **Objetivo**: Contrastar crecimiento exponencial vs logístico
+- **Conceptos**: Recursos limitados, punto de inflexión, divergencia de modelos
+- **Preguntas**: Rango de similitud, tasa máxima, limitaciones del exponencial
+
+##### **Ejercicio 14: Estabilidad en Sistemas Lineales de Segundo Orden**
+- **Objetivo**: Clasificar estabilidad mediante valores propios
+- **Conceptos**: Nodos, espirales, sillas, traza y determinante
+- **Preguntas**: Estabilidad según tr y det, oscilaciones, tipo de punto fijo
+
+##### **Ejercicio 15: Modelo SIR con Vacunación**
+- **Objetivo**: Evaluar efecto de vacunación y calcular inmunidad de rebaño
+- **Conceptos**: R₀ efectivo, umbral de vacunación, prevención de brotes
+- **Preguntas**: Umbral p_c, prevención de brote, necesidad de 100% vacunación
+
+##### **Ejercicio 16: Análisis de Perturbaciones en Órbitas Circulares**
+- **Objetivo**: Estudiar efecto de perturbaciones en órbitas
+- **Conceptos**: Perturbaciones radiales/tangenciales, excentricidad, cambios de energía
+- **Preguntas**: Mantenimiento de circularidad, tipo de perturbación más efectiva, cambio energético
+
+##### **Ejercicio 17: Oscilaciones Forzadas y Resonancia**
+- **Objetivo**: Analizar respuesta a fuerzas periódicas externas
+- **Conceptos**: Resonancia, curva de respuesta, desfase, peligro de resonancia
+- **Preguntas**: Frecuencia de resonancia, efecto del amortiguamiento, susceptibilidad a daños
 
 #### 📝 Tipos de Preguntas
 - **Preguntas Numéricas**: Requieren cálculos basados en la simulación
@@ -264,21 +366,49 @@ python main.py
 
 ## 🎮 Uso de la Aplicación
 
+### Modo Estándar (Simuladores Individuales)
+
 1. **Navegación**: Utiliza el menú lateral izquierdo para seleccionar un sistema dinámico
+2. **Ajustar Parámetros**: Usa los sliders para modificar condiciones y constantes
+3. **Simular**: Presiona "▶ Ejecutar Simulación"
+4. **Analizar**: Observa gráficos temporales, diagramas de fase o visualizaciones 3D
 
-2. **Ajustar Parámetros**: Usa los sliders para modificar:
-   - Condiciones iniciales
-   - Constantes del sistema
-   - Tiempo de simulación
+### Modo Laboratorio (Ejercicios Educativos)
 
-3. **Simular**: Presiona el botón "▶ Ejecutar Simulación"
+1. **Generar Ejercicio**:
+   - Selecciona un sistema del menú desplegable (28 opciones)
+   - Elige dificultad: Principiante, Intermedio o Avanzado
+   - Presiona "🎲 Generar Ejercicio Nuevo"
 
-4. **Visualizar**: Observa los gráficos generados:
-   - Gráficos temporales
-   - Diagramas de fase
-   - Gráficos 3D (Lorenz)
+2. **Leer Instrucciones**:
+   - Revisa objetivos de aprendizaje
+   - Lee las instrucciones paso a paso
+   - Comprende los parámetros del ejercicio
 
-5. **Experimentar**: Modifica los parámetros para explorar diferentes comportamientos
+3. **Trabajar en Simuladores**:
+   - El ejercicio queda **guardado automáticamente**
+   - Navega al simulador individual correspondiente
+   - Verás un **banner verde** indicando el ejercicio activo
+   - Presiona "⚙ Cargar Parámetros" para usar los valores del ejercicio
+   - Experimenta modificando parámetros
+   - El ejercicio persiste al volver al laboratorio
+
+4. **Responder Preguntas**:
+   - Completa las preguntas numéricas o de opción múltiple
+   - Basadas en el análisis de la simulación
+
+5. **Evaluar Resultados**:
+   - Presiona "✅ Evaluar Respuestas"
+   - Recibe calificación automática (70% para aprobar)
+   - Obtén feedback personalizado
+   - Lee sugerencias de mejora específicas
+
+### Ventajas del Sistema de Persistencia
+
+✅ **Flexibilidad**: Navega libremente sin perder el ejercicio  
+✅ **Exploración**: Experimenta con diferentes valores  
+✅ **Aprendizaje Activo**: Combina teoría con práctica  
+✅ **Trazabilidad**: Siempre sabes qué ejercicio está activo
 
 ## 🏗️ Arquitectura
 
