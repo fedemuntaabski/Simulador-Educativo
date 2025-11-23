@@ -1,0 +1,66 @@
+# Archivos de caché de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Entornos virtuales
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Distribución / empaquetado
+dist/
+build/
+*.egg-info/
+
+# Logs
+*.log
+
+# Ignore all parent directories to prevent tracking external files
+../*
+../../*
+
+# Specific external paths and user configs
+.rustup/
+.spyder-py3/
+.ssh/
+.streamlit/
+AppData/
+Documents/
+Downloads/
+OneDrive/
+Pictures/
+Videos/
+Music/
+Favorites/
+Contacts/
+3D Objects/
+Games/
+Library/
+Links/
+Saved Games/
+Searches/
+NTUSER.DAT*
+ntuser.*
+desktop.ini
+*.lnk
+
+# Temporary project files
+user_data.json
+verify_changes.py
