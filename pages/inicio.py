@@ -321,7 +321,7 @@ class InicioPage(tk.Frame):
         
         features = [
             (ICONS['lab'], "Modo Laboratorio", "Ejercicios automáticos con evaluación instantánea"),
-            (ICONS['save'], "Persistencia", "Los ejercicios se guardan automáticamente"),
+            (ICONS['settings'], "Interfaz Intuitiva", "Diseño moderno y fácil de usar"),
             (ICONS['graph'], "Análisis Cualitativo", "Interpretación automática sin cálculo pesado"),
             (ICONS['book'], "Contenido Educativo", "Teoría completa y aplicaciones prácticas")
         ]

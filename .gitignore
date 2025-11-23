@@ -64,3 +64,6 @@ desktop.ini
 # Temporary project files
 user_data.json
 verify_changes.py
+
+# Github
+.github/

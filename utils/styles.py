@@ -75,6 +75,7 @@ FONTS = {
     'label': ('Segoe UI', 10),                    # Etiquetas
     'value': ('Segoe UI', 11, 'bold'),            # Valores
     'small': ('Segoe UI', 9),                     # Texto pequeño
+    'small_bold': ('Segoe UI', 9, 'bold'),         # Texto pequeño en negrita
     'tiny': ('Segoe UI', 8),                      # Texto muy pequeño
     
     # Especiales

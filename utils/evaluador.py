@@ -3,7 +3,6 @@ Sistema de evaluación automática para ejercicios de laboratorio.
 """
 
 import numpy as np
-from utils.user_metrics import UserMetrics
 from utils.ejercicio_state import EjercicioState
 
 
@@ -17,7 +16,6 @@ class Evaluador:
         self.respuestas_estudiante = {}
         self.puntuacion_total = 0
         self.puntuacion_maxima = 0
-        self.metrics = UserMetrics()
     
     def evaluar_ejercicio(self, ejercicio, respuestas):
         """
@@ -64,18 +62,6 @@ class Evaluador:
             resultados['porcentaje'],
             ejercicio['sistema']
         )
-
-        # Registrar métricas si el ejercicio fue aprobado (o siempre, según preferencia)
-        # Aquí registramos siempre para trackear progreso
-        duration = EjercicioState.get_duration_seconds()
-        metrics_result = self.metrics.record_exercise_completion(
-            exercise_id=ejercicio.get('id', 'unknown'),
-            topic=ejercicio.get('sistema', 'unknown'),
-            score=resultados['porcentaje'],
-            time_taken_seconds=duration
-        )
-        
-        resultados['metrics'] = metrics_result
         
         return resultados
     
