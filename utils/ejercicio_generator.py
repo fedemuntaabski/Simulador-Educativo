@@ -138,6 +138,20 @@ class EjercicioGenerator:
                     'tipo': 'opcion_multiple',
                     'opciones': ['Más rápido', 'Más lento', 'Igual'],
                     'respuesta_correcta': 0
+                },
+                {
+                    'id': 4,
+                    'texto': '¿Qué tipo de ecuación diferencial describe el enfriamiento de Newton?',
+                    'tipo': 'opcion_multiple',
+                    'opciones': ['Lineal de primer orden', 'No lineal de primer orden', 'Lineal de segundo orden', 'No lineal de segundo orden'],
+                    'respuesta_correcta': 0
+                },
+                {
+                    'id': 5,
+                    'texto': f'Si la temperatura inicial fuera {T0 + 20}°C (en lugar de {T0}°C), ¿el tiempo de enfriamiento sería?',
+                    'tipo': 'opcion_multiple',
+                    'opciones': ['Mayor', 'Menor', 'Igual', 'No se puede determinar'],
+                    'respuesta_correcta': 0
                 }
             ],
             'analisis_requerido': [

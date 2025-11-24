@@ -9,8 +9,8 @@ COLORS = {
     'background': '#f5f7fa',          # Gris muy claro
     'sidebar': '#1e2a38',             # Azul oscuro profesional
     'sidebar_hover': '#2a3f54',       # Hover para sidebar
-    'header': '#ffffff',              # Blanco puro
-    'content_bg': '#ffffff',          # Blanco
+    'header': '#f8f9fa',              # Gris claro
+    'content_bg': '#f8f9fa',          # Gris claro
     
     # Botones y elementos interactivos
     'button': '#3d5a80',              # Azul medio
@@ -43,10 +43,10 @@ COLORS = {
     # Elementos de UI
     'border': '#e2e8f0',              # Borde sutil
     'border_dark': '#cbd5e0',         # Borde más visible
-    'graph_bg': '#ffffff',            # Fondo gráficos
-    'card_bg': '#ffffff',             # Fondo tarjetas
+    'graph_bg': '#f8f9fa',            # Gris claro
+    'card_bg': '#f8f9fa',             # Gris claro
     'card_shadow': '#e2e8f0',         # Sombra tarjetas
-    'input_bg': '#f7fafc',            # Fondo inputs
+    'input_bg': '#f1f3f4',            # Gris claro para inputs
     'input_border': '#cbd5e0',        # Borde inputs
     
     # Gradientes (representados como tuplas de colores)

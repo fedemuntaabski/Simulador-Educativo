@@ -517,6 +517,42 @@ class DamperSimulator(SystemSimulator):
         return sol.t, sol.y[0], sol.y[1]
 
 
-class ButterflySimulator(LorenzSimulator):
-    """Alias para el simulador de Lorenz (Efecto Mariposa)."""
-    pass
+class ButterflySimulator(SystemSimulator):
+    """Simulador para el atractor de Rössler (Mariposa)."""
+    
+    params = {
+        'a': {'min': 0.1, 'max': 0.5, 'default': 0.2, 'desc': 'Parámetro a'},
+        'b': {'min': 0.1, 'max': 0.5, 'default': 0.2, 'desc': 'Parámetro b'},
+        'c': {'min': 2.0, 'max': 10.0, 'default': 5.7, 'desc': 'Parámetro c'}
+    }
+    ranges = {
+        'a': (0.1, 0.5),
+        'b': (0.1, 0.5),
+        'c': (2.0, 10.0)
+    }
+    
+    @staticmethod
+    def rossler_system(t, state, a, b, c):
+        """
+        Sistema de Rössler:
+        dx/dt = -y - z
+        dy/dt = x + a*y
+        dz/dt = b + z*(x - c)
+        """
+        x, y, z = state
+        dx = -y - z
+        dy = x + a * y
+        dz = b + z * (x - c)
+        return [dx, dy, dz]
+
+    @classmethod
+    def simulate(cls, x0, y0, z0, a=0.2, b=0.2, c=5.7, t_max=100):
+        t_eval = np.linspace(0, t_max, 2000)
+        sol = cls.solve_ode(
+            cls.rossler_system, 
+            [x0, y0, z0], 
+            (0, t_max), 
+            t_eval=t_eval, 
+            a=a, b=b, c=c
+        )
+        return sol.t, sol.y[0], sol.y[1], sol.y[2]

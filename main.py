@@ -30,9 +30,12 @@ class SimulatorApp:
             root: Ventana raíz de Tkinter
         """
         self.root = root
-        self.root.title("Simulador de Sistemas Dinámicos • Versión 2.0")
+        self.root.title("Simulador de Sistemas Dinámicos")
         self.root.geometry("1450x850")
         self.root.configure(bg=COLORS['background'])
+        
+        # Estado del sidebar
+        self.sidebar_visible = True
         
         # Centrar ventana en la pantalla
         self.center_window()
@@ -44,6 +47,9 @@ class SimulatorApp:
         # Crear frames principales
         self.create_sidebar()
         self.create_main_area()
+        
+        # Crear botón flotante de toggle sidebar (siempre visible)
+        self.create_toggle_button()
         
         # Inicializar gestor de navegación
         self.nav_manager = NavigationManager(self.content_frame, self.header_label)
@@ -65,16 +71,16 @@ class SimulatorApp:
         Crea la barra de navegación lateral con botones para cada sistema.
         Diseño moderno con efectos hover y animaciones.
         """
-        sidebar = tk.Frame(
+        self.sidebar = tk.Frame(
             self.root,
             bg=COLORS['sidebar'],
             width=DIMENSIONS['sidebar_width']
         )
-        sidebar.grid(row=0, column=0, sticky="nsew")
-        sidebar.grid_propagate(False)
+        self.sidebar.grid(row=0, column=0, sticky="nsew")
+        self.sidebar.grid_propagate(False)
         
         # Header del sidebar con logo/título
-        header_sidebar = tk.Frame(sidebar, bg=COLORS['sidebar'])
+        header_sidebar = tk.Frame(self.sidebar, bg=COLORS['sidebar'])
         header_sidebar.pack(fill=tk.X, pady=(DIMENSIONS['space_lg'], DIMENSIONS['space_md']))
         
         # Logo/Icono principal
@@ -98,25 +104,15 @@ class SimulatorApp:
         )
         title_label.pack(pady=(DIMENSIONS['space_sm'], 0))
         
-        # Versión
-        version_label = tk.Label(
-            header_sidebar,
-            text="v2.0",
-            font=FONTS['tiny'],
-            bg=COLORS['sidebar'],
-            fg=COLORS['text_muted']
-        )
-        version_label.pack()
-        
         # Separador con gradiente visual
-        separator_frame = tk.Frame(sidebar, bg=COLORS['sidebar'], height=DIMENSIONS['space_md'])
+        separator_frame = tk.Frame(self.sidebar, bg=COLORS['sidebar'], height=DIMENSIONS['space_md'])
         separator_frame.pack(fill=tk.X)
         
         separator = tk.Frame(separator_frame, height=2, bg=COLORS['accent'])
         separator.pack(fill=tk.X, padx=DIMENSIONS['space_lg'])
         
         # Container para botones con scroll (si es necesario en el futuro)
-        buttons_container = tk.Frame(sidebar, bg=COLORS['sidebar'])
+        buttons_container = tk.Frame(self.sidebar, bg=COLORS['sidebar'])
         buttons_container.pack(fill=tk.BOTH, expand=True, pady=DIMENSIONS['space_md'])
         
         # Botones de navegación
@@ -152,23 +148,12 @@ class SimulatorApp:
             self.nav_buttons[page_id] = btn
         
         # Footer del sidebar
-        footer_frame = tk.Frame(sidebar, bg=COLORS['sidebar'])
+        footer_frame = tk.Frame(self.sidebar, bg=COLORS['sidebar'])
         footer_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=DIMENSIONS['space_lg'])
         
         # Separador footer
         footer_sep = tk.Frame(footer_frame, height=1, bg=COLORS['sidebar_hover'])
         footer_sep.pack(fill=tk.X, padx=DIMENSIONS['space_lg'], pady=(0, DIMENSIONS['space_md']))
-        
-        # Información
-        info_label = tk.Label(
-            footer_frame,
-            text="Modelado y Simulación\nUniversidad • 2025",
-            font=FONTS['small'],
-            bg=COLORS['sidebar'],
-            fg=COLORS['text_muted'],
-            justify=tk.CENTER
-        )
-        info_label.pack()
     
     def create_nav_button(self, parent, text, page_id):
         """Crea un botón de navegación estándar con efectos hover."""
@@ -393,6 +378,42 @@ class SimulatorApp:
             "• Recibe feedback personalizado\n\n"
             "💡 Los ejercicios se guardan automáticamente"
         )
+    
+    def create_toggle_button(self):
+        """Crea un botón flotante siempre visible para toggle del sidebar."""
+        self.toggle_btn = tk.Button(
+            self.root,
+            text="☰",
+            font=('Segoe UI', 18, 'bold'),
+            bg=COLORS['accent'],  # Naranja
+            fg='white',
+            activebackground=COLORS['accent_dark'],
+            activeforeground='white',
+            relief=tk.FLAT,
+            cursor="hand2",
+            command=self.toggle_sidebar,
+            width=3,
+            height=1
+        )
+        # Posicionar en la esquina superior izquierda
+        self.toggle_btn.place(x=10, y=10)
+        
+        # Efecto hover
+        self.toggle_btn.bind('<Enter>', lambda e: self.toggle_btn.configure(bg=COLORS['accent_light']))
+        self.toggle_btn.bind('<Leave>', lambda e: self.toggle_btn.configure(bg=COLORS['accent']))
+    
+    def toggle_sidebar(self):
+        """Alterna la visibilidad del sidebar."""
+        if self.sidebar_visible:
+            # Ocultar sidebar
+            self.sidebar.grid_remove()
+            self.toggle_btn.config(text="☰")
+            self.sidebar_visible = False
+        else:
+            # Mostrar sidebar
+            self.sidebar.grid()
+            self.toggle_btn.config(text="☰")
+            self.sidebar_visible = True
     
     def run(self):
         """

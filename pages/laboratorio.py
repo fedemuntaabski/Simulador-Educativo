@@ -99,7 +99,9 @@ class LaboratorioPage(tk.Frame):
         tk.Label(controls_frame, text="Sistema Dinámico:", font=FONTS['label'],
                 bg=COLORS['header']).grid(row=0, column=0, sticky='w', padx=(0, 10))
         
-        self.sistema_var = tk.StringVar(value='newton')
+        # Restaurar sistema previamente seleccionado
+        saved_system = EjercicioState.get_selected_system()
+        self.sistema_var = tk.StringVar(value=saved_system)
         sistemas = [
             ('📚 EJERCICIOS CLÁSICOS', 'separator'),
             ('Enfriamiento Newton', 'newton'),
@@ -142,6 +144,7 @@ class LaboratorioPage(tk.Frame):
             width=35
         )
         sistema_combo.grid(row=0, column=1, sticky='w')
+        sistema_combo.bind('<<ComboboxSelected>>', lambda e: self.on_sistema_changed())
         
         # Mapeo de nombres a IDs
         self.sistema_map = {s[0]: s[1] for s in sistemas if s[1] not in ['separator', 'separator2', 'separator3']}
@@ -150,7 +153,9 @@ class LaboratorioPage(tk.Frame):
         tk.Label(controls_frame, text="Dificultad:", font=FONTS['label'],
                 bg=COLORS['header']).grid(row=0, column=2, sticky='w', padx=(20, 10))
         
-        self.dificultad_var = tk.StringVar(value='intermedio')
+        # Restaurar dificultad previamente seleccionada
+        saved_difficulty = EjercicioState.get_selected_difficulty()
+        self.dificultad_var = tk.StringVar(value=saved_difficulty)
         dificultad_combo = ttk.Combobox(
             controls_frame,
             textvariable=self.dificultad_var,
@@ -159,6 +164,7 @@ class LaboratorioPage(tk.Frame):
             width=15
         )
         dificultad_combo.grid(row=0, column=3, sticky='w')
+        dificultad_combo.bind('<<ComboboxSelected>>', lambda e: self.on_dificultad_changed())
         
         # Botón generar
         tk.Button(
@@ -179,22 +185,17 @@ class LaboratorioPage(tk.Frame):
         self.notebook.pack(fill=tk.BOTH, expand=True)
         
         # Pestaña 1: Instrucciones y Objetivos
-        self.tab_instrucciones = tk.Frame(self.notebook, bg='white')
+        self.tab_instrucciones = tk.Frame(self.notebook, bg=COLORS['card_bg'])
         self.notebook.add(self.tab_instrucciones, text='📖 Instrucciones')
         self.create_instrucciones_tab()
         
-        # Pestaña 2: Simulación
-        self.tab_simulacion = tk.Frame(self.notebook, bg='white')
-        self.notebook.add(self.tab_simulacion, text='🔬 Simulación')
-        self.create_simulacion_tab()
-        
-        # Pestaña 3: Preguntas
-        self.tab_preguntas = tk.Frame(self.notebook, bg='white')
+        # Pestaña 2: Preguntas
+        self.tab_preguntas = tk.Frame(self.notebook, bg=COLORS['card_bg'])
         self.notebook.add(self.tab_preguntas, text='❓ Preguntas')
         self.create_preguntas_tab()
         
-        # Pestaña 4: Resultados
-        self.tab_resultados = tk.Frame(self.notebook, bg='white')
+        # Pestaña 3: Resultados
+        self.tab_resultados = tk.Frame(self.notebook, bg=COLORS['card_bg'])
         self.notebook.add(self.tab_resultados, text='📊 Resultados')
         self.create_resultados_tab()
     
@@ -207,7 +208,7 @@ class LaboratorioPage(tk.Frame):
             wrap=tk.WORD,
             padx=20,
             pady=20,
-            bg='#f9f9f9'
+            bg=COLORS['input_bg']
         )
         self.instrucciones_text.pack(fill=tk.BOTH, expand=True)
         
@@ -216,63 +217,16 @@ class LaboratorioPage(tk.Frame):
             "🧪 BIENVENIDO AL LABORATORIO DE SISTEMAS DINÁMICOS\n\n"
             "Selecciona un sistema y una dificultad, luego presiona 'Generar Ejercicio Nuevo'.\n\n"
             "Los ejercicios se generan automáticamente con parámetros aleatorios y preguntas específicas.\n\n"
-            "Sigue las instrucciones, ejecuta la simulación y responde las preguntas para completar el laboratorio."
+            "Sigue las instrucciones, ejecuta el ejercicio y responde las preguntas para completar el laboratorio."
         )
         self.instrucciones_text.config(state='disabled')
-    
-    def create_simulacion_tab(self):
-        """Crea la pestaña de simulación."""
-        # Frame para parámetros
-        params_frame = tk.Frame(self.tab_simulacion, bg='white', height=150)
-        params_frame.pack(fill=tk.X, padx=10, pady=10)
-        params_frame.pack_propagate(False)
-        
-        tk.Label(
-            params_frame,
-            text="⚙️ Parámetros del Ejercicio",
-            font=FONTS['section_title'],
-            bg='white'
-        ).pack(pady=(10, 5))
-        
-        self.params_display = tk.Label(
-            params_frame,
-            text="Genera un ejercicio para ver los parámetros",
-            font=FONTS['label'],
-            bg='white',
-            fg=COLORS['text_muted'],
-            justify=tk.LEFT
-        )
-        self.params_display.pack(pady=10)
-        
-        # Botón ejecutar simulación
-        tk.Button(
-            params_frame,
-            text="▶ Ejecutar Simulación",
-            font=FONTS['button'],
-            bg=COLORS['success'],
-            fg='white',
-            cursor="hand2",
-            command=self.ejecutar_simulacion,
-            pady=10,
-            padx=20,
-            state='disabled'
-        ).pack()
-        
-        self.btn_simular = params_frame.winfo_children()[-1]
-        
-        # Frame para gráfico
-        graph_container = tk.Frame(self.tab_simulacion, bg='white')
-        graph_container.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
-        
-        self.graph_simulacion = GraphCanvas(graph_container, figsize=(10, 5))
-        self.graph_simulacion.get_widget().pack(fill=tk.BOTH, expand=True)
     
     def create_preguntas_tab(self):
         """Crea la pestaña de preguntas."""
         # Scroll frame para preguntas
-        canvas = tk.Canvas(self.tab_preguntas, bg='white')
+        canvas = tk.Canvas(self.tab_preguntas, bg=COLORS['card_bg'])
         scrollbar = ttk.Scrollbar(self.tab_preguntas, orient="vertical", command=canvas.yview)
-        self.preguntas_frame = tk.Frame(canvas, bg='white')
+        self.preguntas_frame = tk.Frame(canvas, bg=COLORS['card_bg'])
         
         self.preguntas_frame.bind(
             "<Configure>",
@@ -290,7 +244,7 @@ class LaboratorioPage(tk.Frame):
             self.preguntas_frame,
             text="Genera un ejercicio para ver las preguntas",
             font=FONTS['label'],
-            bg='white',
+            bg=COLORS['card_bg'],
             fg=COLORS['text_muted']
         ).pack(pady=50)
     
@@ -302,12 +256,12 @@ class LaboratorioPage(tk.Frame):
             wrap=tk.WORD,
             padx=20,
             pady=20,
-            bg='#f9f9f9'
+            bg=COLORS['input_bg']
         )
         self.resultados_text.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         
         # Botón evaluar
-        btn_frame = tk.Frame(self.tab_resultados, bg='white')
+        btn_frame = tk.Frame(self.tab_resultados, bg=COLORS['card_bg'])
         btn_frame.pack(fill=tk.X, padx=10, pady=10)
         
         tk.Button(
@@ -331,6 +285,10 @@ class LaboratorioPage(tk.Frame):
         sistema_id = self.sistema_map.get(sistema_nombre, 'newton')
         dificultad = self.dificultad_var.get()
         
+        # Guardar selecciones en el estado global
+        EjercicioState.set_selected_system(sistema_nombre)
+        EjercicioState.set_selected_difficulty(dificultad)
+        
         try:
             self.ejercicio_actual = self.generator.generar_ejercicio(sistema_id, dificultad)
             self.respuestas = {}
@@ -348,7 +306,6 @@ class LaboratorioPage(tk.Frame):
             self.mostrar_preguntas()
             
             # Habilitar botones
-            self.btn_simular.config(state='normal')
             self.btn_evaluar.config(state='normal')
             
             # Actualizar indicador
@@ -357,7 +314,7 @@ class LaboratorioPage(tk.Frame):
             # Limpiar resultados
             self.resultados_text.delete('1.0', tk.END)
             self.resultados_text.insert('1.0', 
-                "Completa la simulación y responde las preguntas.\n"
+                "Completa el ejercicio y responde las preguntas.\n"
                 "Luego presiona 'Evaluar Respuestas' para ver tu calificación.")
             
             messagebox.showinfo(
@@ -406,16 +363,9 @@ class LaboratorioPage(tk.Frame):
         self.instrucciones_text.config(state='disabled')
     
     def mostrar_parametros(self):
-        """Muestra los parámetros del ejercicio."""
-        if not self.ejercicio_actual:
-            return
-        
-        params = self.ejercicio_actual['parametros']
-        texto = "PARÁMETROS:\n"
-        for param, valor in params.items():
-            texto += f"  • {param} = {valor}\n"
-        
-        self.params_display.config(text=texto, fg=COLORS['text_dark'])
+        """Muestra los parámetros del ejercicio en las instrucciones."""
+        # Esta función ya no es necesaria ya que los parámetros se muestran en las instrucciones
+        pass
     
     def mostrar_preguntas(self):
         """Muestra las preguntas del ejercicio."""
@@ -432,7 +382,7 @@ class LaboratorioPage(tk.Frame):
             self.preguntas_frame,
             text="❓ PREGUNTAS DEL EJERCICIO",
             font=FONTS['section_title'],
-            bg='white'
+            bg=COLORS['card_bg']
         ).pack(pady=(20, 15))
         
         for pregunta in self.ejercicio_actual['preguntas']:
@@ -441,7 +391,7 @@ class LaboratorioPage(tk.Frame):
     def crear_pregunta_widget(self, pregunta):
         """Crea el widget para una pregunta."""
         # Frame para la pregunta
-        q_frame = tk.Frame(self.preguntas_frame, bg='white', relief=tk.RAISED, borderwidth=1)
+        q_frame = tk.Frame(self.preguntas_frame, bg=COLORS['card_bg'], relief=tk.RAISED, borderwidth=1)
         q_frame.pack(fill=tk.X, padx=20, pady=10)
         
         # Texto de la pregunta
@@ -449,7 +399,7 @@ class LaboratorioPage(tk.Frame):
             q_frame,
             text=f"Pregunta {pregunta['id']}:",
             font=('Segoe UI', 11, 'bold'),
-            bg='white',
+            bg=COLORS['card_bg'],
             anchor='w'
         ).pack(fill=tk.X, padx=15, pady=(10, 5))
         
@@ -457,7 +407,7 @@ class LaboratorioPage(tk.Frame):
             q_frame,
             text=pregunta['texto'],
             font=FONTS['label'],
-            bg='white',
+            bg=COLORS['card_bg'],
             anchor='w',
             wraplength=700,
             justify=tk.LEFT
@@ -465,16 +415,16 @@ class LaboratorioPage(tk.Frame):
         
         # Campo de respuesta según tipo
         if pregunta['tipo'] == 'numerica':
-            respuesta_frame = tk.Frame(q_frame, bg='white')
+            respuesta_frame = tk.Frame(q_frame, bg=COLORS['card_bg'])
             respuesta_frame.pack(fill=tk.X, padx=15, pady=(0, 15))
             
-            tk.Label(respuesta_frame, text="Respuesta:", bg='white').pack(side=tk.LEFT)
+            tk.Label(respuesta_frame, text="Respuesta:", bg=COLORS['card_bg']).pack(side=tk.LEFT)
             
             entry = tk.Entry(respuesta_frame, font=FONTS['label'], width=15)
             entry.pack(side=tk.LEFT, padx=10)
             
             tk.Label(respuesta_frame, text=pregunta.get('unidad', ''),
-                    bg='white', fg=COLORS['text_muted']).pack(side=tk.LEFT)
+                    bg=COLORS['card_bg'], fg=COLORS['text_muted']).pack(side=tk.LEFT)
             
             self.respuestas[pregunta['id']] = entry
             
@@ -489,145 +439,21 @@ class LaboratorioPage(tk.Frame):
                     variable=var,
                     value=i,
                     font=FONTS['label'],
-                    bg='white',
+                    bg=COLORS['card_bg'],
                     anchor='w'
                 ).pack(fill=tk.X, padx=30, pady=2)
             
-            tk.Label(q_frame, text="", bg='white').pack(pady=5)  # Espaciado
+            tk.Label(q_frame, text="", bg=COLORS['card_bg']).pack(pady=5)  # Espaciado
     
     def ejecutar_simulacion(self):
-        """Ejecuta la simulación con los parámetros del ejercicio."""
-        if not self.ejercicio_actual:
-            return
-        
-        sistema = self.ejercicio_actual['sistema']
-        params = self.ejercicio_actual['parametros']
-        
-        try:
-            # Ejecutar según el sistema
-            if sistema == 'newton':
-                t, T = NewtonCoolingSimulator.simulate(
-                    params['T0'], params['T_env'], params['k']
-                )
-                self.graph_simulacion.clear()
-                self.graph_simulacion.plot(t, T, 'b-', linewidth=2)
-                self.graph_simulacion.ax.axhline(y=params['T_env'], color='r',
-                                                linestyle='--', label='T ambiente')
-                self.graph_simulacion.set_labels('Tiempo (min)', 'Temperatura (°C)',
-                                                'Enfriamiento de Newton')
-            
-            elif sistema == 'van_der_pol':
-                t, x, v = VanDerPolSimulator.simulate(
-                    params['x0'], params['v0'], params['mu']
-                )
-                self.graph_simulacion.clear()
-                self.graph_simulacion.plot(x, v, 'b-', linewidth=1.5)
-                self.graph_simulacion.set_labels('x', 'dx/dt', 'Diagrama de Fase')
-            
-            elif sistema == 'sir':
-                t, S, I, R = SIRSimulator.simulate(
-                    params['S0'], params['I0'], params['R0'],
-                    params['beta'], params['gamma']
-                )
-                self.graph_simulacion.clear()
-                self.graph_simulacion.plot(t, S, 'b-', linewidth=2, label='S')
-                self.graph_simulacion.plot(t, I, 'r-', linewidth=2, label='I')
-                self.graph_simulacion.plot(t, R, 'g-', linewidth=2, label='R')
-                self.graph_simulacion.set_labels('Tiempo (días)', 'Población', 'Modelo SIR')
-                self.graph_simulacion.legend()
-            
-            elif sistema == 'hopf':
-                t, x, y = HopfSimulator.simulate(
-                    params['x0'], params['y0'], params['mu']
-                )
-                self.graph_simulacion.clear()
-                self.graph_simulacion.plot(x, y, 'b-', linewidth=1.5)
-                self.graph_simulacion.set_labels('x', 'y', 'Bifurcación de Hopf')
-            
-            elif sistema == 'logistico':
-                t, N = LogisticSimulator.simulate(
-                    params['N0'], params['r'], params['K']
-                )
-                self.graph_simulacion.clear()
-                self.graph_simulacion.plot(t, N, 'b-', linewidth=2)
-                self.graph_simulacion.ax.axhline(y=params['K'], color='r',
-                                                linestyle='--', label='Capacidad K')
-                self.graph_simulacion.set_labels('Tiempo', 'Población', 'Crecimiento Logístico')
-                self.graph_simulacion.legend()
-            
-            elif sistema == 'verhulst':
-                n, x = VerhulstSimulator.simulate(
-                    params['x0'], params['r']
-                )
-                self.graph_simulacion.clear()
-                self.graph_simulacion.plot(n, x, 'b-', marker='o', markersize=3, linewidth=1)
-                self.graph_simulacion.set_labels('Iteración', 'Población', 'Mapa de Verhulst')
-            
-            elif sistema == 'amortiguador':
-                t, x, v = DamperSimulator.simulate(
-                    params['x0'], params['v0'], params['m'],
-                    params['c'], params['k'],
-                    params.get('F0', 0), params.get('omega_f', 0)
-                )
-                self.graph_simulacion.clear()
-                self.graph_simulacion.plot(t, x, 'b-', linewidth=2, label='Posición')
-                self.graph_simulacion.set_labels('Tiempo', 'Posición', 'Sistema Amortiguador')
-                self.graph_simulacion.legend()
-
-            elif sistema == 'rlc':
-                t, I, Q, V = RLCSimulator.simulate(
-                    params['I0'], params['Q0'], params['R'],
-                    params['L'], params['C'], params['V0']
-                )
-                self.graph_simulacion.clear()
-                self.graph_simulacion.plot(t, I, 'b-', linewidth=2, label='Corriente (I)')
-                self.graph_simulacion.plot(t, V, 'r-', linewidth=2, label='Voltaje C (V)')
-                self.graph_simulacion.set_labels('Tiempo', 'Magnitud', 'Circuito RLC')
-                self.graph_simulacion.legend()
-
-            elif sistema == 'lorenz':
-                t, x, y, z = LorenzSimulator.simulate(
-                    params['x0'], params['y0'], params['z0'],
-                    params['sigma'], params['rho'], params['beta']
-                )
-                self.graph_simulacion.clear()
-                self.graph_simulacion.plot(x, z, 'b-', linewidth=0.5)
-                self.graph_simulacion.set_labels('x', 'z', 'Atractor de Lorenz (Proyección X-Z)')
-
-            elif sistema == 'mariposa':
-                t, x, y, z = ButterflySimulator.simulate(
-                    params['x0'], params['y0'], params['z0'],
-                    params['sigma'], params['rho'], params['beta']
-                )
-                self.graph_simulacion.clear()
-                self.graph_simulacion.plot(x, z, 'm-', linewidth=0.5)
-                self.graph_simulacion.set_labels('x', 'z', 'Efecto Mariposa')
-
-            elif sistema == 'orbital':
-                t, x, y, vx, vy = OrbitalSimulator.simulate(
-                    params['x0'], params['y0'], params['vx0'], params['vy0'],
-                    params['GM']
-                )
-                self.graph_simulacion.clear()
-                self.graph_simulacion.plot(x, y, 'b-', linewidth=1)
-                self.graph_simulacion.plot([0], [0], 'yo', markersize=10, label='Cuerpo Central')
-                self.graph_simulacion.set_labels('x', 'y', 'Órbita Planetaria')
-                self.graph_simulacion.legend()
-                self.graph_simulacion.ax.set_aspect('equal')
-            
-            else:
-                messagebox.showwarning("Aviso", f"Simulación de {sistema} en desarrollo")
-                return
-            
-            self.graph_simulacion.grid(True)
-            self.graph_simulacion.tight_layout()
-            
-            messagebox.showinfo("Simulación Completa",
-                              "La simulación se ha ejecutado correctamente.\n"
-                              "Analiza el gráfico y responde las preguntas.")
-            
-        except Exception as e:
-            messagebox.showerror("Error en Simulación", str(e))
+        """Ejecuta el ejercicio con los parámetros especificados."""
+        # Esta funcionalidad ya no es necesaria en el laboratorio
+        # Los ejercicios se resuelven conceptualmente
+        messagebox.showinfo(
+            "Información",
+            "En el modo laboratorio, los ejercicios se resuelven mediante análisis conceptual.\n\n"
+            "Para ver simulaciones interactivas, selecciona el sistema específico del menú lateral."
+        )
     
     def evaluar_respuestas(self):
         """Evalúa las respuestas del estudiante."""
@@ -742,3 +568,13 @@ class LaboratorioPage(tk.Frame):
             callback: Función para navegar a otras páginas
         """
         self.nav_callback = callback
+    
+    def on_sistema_changed(self):
+        """Callback cuando cambia el sistema seleccionado."""
+        sistema_nombre = self.sistema_var.get()
+        EjercicioState.set_selected_system(sistema_nombre)
+    
+    def on_dificultad_changed(self):
+        """Callback cuando cambia la dificultad seleccionada."""
+        dificultad = self.dificultad_var.get()
+        EjercicioState.set_selected_difficulty(dificultad)

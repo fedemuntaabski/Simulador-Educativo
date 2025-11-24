@@ -90,3 +90,7 @@ class NavigationManager:
         page_class = page_info['class']
         self.current_page = page_class(self.content_frame)
         self.current_page.pack(fill=tk.BOTH, expand=True)
+        
+        # Configurar callback de navegación si la página lo soporta
+        if hasattr(self.current_page, 'set_navigation_callback'):
+            self.current_page.set_navigation_callback(self.show_page)

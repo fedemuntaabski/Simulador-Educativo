@@ -1,16 +1,17 @@
 """
-Página de inicio con información general de la aplicación.
-Diseño moderno con tarjetas interactivas y estadísticas.
+Página de inicio - Diseño moderno y minimalista
+Plataforma educativa para sistemas dinámicos
 """
 
 import tkinter as tk
 from tkinter import ttk
 from utils.styles import COLORS, FONTS, DIMENSIONS, ICONS
+import random
 
 
 class InicioPage(tk.Frame):
     """
-    Página de bienvenida con diseño moderno, tarjetas interactivas y guía rápida.
+    Página de inicio moderna y atractiva.
     """
     
     def __init__(self, parent):
@@ -21,11 +22,16 @@ class InicioPage(tk.Frame):
             parent: Widget padre
         """
         super().__init__(parent, bg=COLORS['content_bg'])
+        self.nav_callback = None
         self.create_widgets()
     
+    def set_navigation_callback(self, callback):
+        """Establece el callback de navegación."""
+        self.nav_callback = callback
+    
     def create_widgets(self):
-        """Crea los widgets de la página de inicio con diseño moderno."""
-        # Canvas con scrollbar para contenido largo
+        """Crea los widgets de la página de inicio."""
+        # Canvas con scrollbar
         canvas = tk.Canvas(self, bg=COLORS['content_bg'], highlightthickness=0)
         scrollbar = ttk.Scrollbar(self, orient="vertical", command=canvas.yview)
         scrollable_frame = tk.Frame(canvas, bg=COLORS['content_bg'])
@@ -41,381 +47,238 @@ class InicioPage(tk.Frame):
         canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
         
-        # Actualizar ancho del frame interno cuando cambia el canvas
         canvas.bind('<Configure>', lambda e: canvas.itemconfig(
             canvas.find_withtag("all")[0], width=e.width))
         
-        # Contenedor principal con padding
+        # Contenedor principal
         main_container = tk.Frame(scrollable_frame, bg=COLORS['content_bg'])
-        main_container.pack(fill=tk.BOTH, expand=True, padx=DIMENSIONS['space_xxl'], pady=DIMENSIONS['space_xl'])
+        main_container.pack(fill=tk.BOTH, expand=True, padx=40, pady=30)
         
-        # Hero Section - Banner de bienvenida
-        self.create_hero_section(main_container)
+        # Banner principal
+        self.create_main_banner(main_container)
         
-        # Quick Stats - Estadísticas rápidas
-        self.create_stats_section(main_container)
+        # Sección de sistemas destacados
+        self.create_featured_systems(main_container)
         
-        # Systems Grid - Tarjetas de sistemas
-        self.create_systems_grid(main_container)
+        # Información del laboratorio
+        self.create_lab_info(main_container)
         
-        # Features Section - Características principales
-        self.create_features_section(main_container)
-        
-        # Quick Start Guide
-        self.create_quick_start(main_container)
-        
-        # Footer
+        # Footer minimalista
         self.create_footer(main_container)
     
-    def create_hero_section(self, parent):
-        """Crea la sección hero con banner de bienvenida."""
-        hero_frame = tk.Frame(parent, bg=COLORS['accent'], height=200)
-        hero_frame.pack(fill=tk.X, pady=(0, DIMENSIONS['space_xxl']))
-        hero_frame.pack_propagate(False)
+    def create_main_banner(self, parent):
+        """Crea el banner principal con diseño moderno."""
+        banner = tk.Frame(parent, bg=COLORS['card_bg'], relief=tk.FLAT, 
+                         highlightbackground=COLORS['accent'], highlightthickness=3)
+        banner.pack(fill=tk.X, pady=(0, 40))
         
-        # Contenido centrado
-        content_frame = tk.Frame(hero_frame, bg=COLORS['accent'])
-        content_frame.place(relx=0.5, rely=0.5, anchor='center')
+        # Contenedor interno con padding
+        inner = tk.Frame(banner, bg=COLORS['card_bg'])
+        inner.pack(fill=tk.BOTH, expand=True, padx=50, pady=40)
         
-        # Icono grande
-        icon_label = tk.Label(
-            content_frame,
-            text="🎯",
-            font=('Segoe UI', 48),
-            bg=COLORS['accent'],
-            fg='white'
+        # Lado izquierdo - Texto
+        left_frame = tk.Frame(inner, bg=COLORS['card_bg'])
+        left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        # Título grande
+        title = tk.Label(
+            left_frame,
+            text="Simulador de\\nSistemas Dinámicos",
+            font=('Segoe UI', 42, 'bold'),
+            bg=COLORS['card_bg'],
+            fg=COLORS['text_dark'],
+            justify=tk.LEFT
         )
-        icon_label.pack()
-        
-        # Título principal
-        title_label = tk.Label(
-            content_frame,
-            text="Simulador de Sistemas Dinámicos",
-            font=FONTS['title_large'],
-            bg=COLORS['accent'],
-            fg='white'
-        )
-        title_label.pack(pady=(DIMENSIONS['space_md'], DIMENSIONS['space_xs']))
+        title.pack(anchor='w', pady=(0, 15))
         
         # Subtítulo
-        subtitle_label = tk.Label(
-            content_frame,
-            text="Explora, Aprende y Simula • Plataforma Educativa Interactiva",
-            font=FONTS['body'],
-            bg=COLORS['accent'],
-            fg='white'
+        subtitle = tk.Label(
+            left_frame,
+            text="Plataforma educativa interactiva para el análisis\\ny visualización de sistemas dinámicos complejos.",
+            font=('Segoe UI', 13),
+            bg=COLORS['card_bg'],
+            fg=COLORS['text_medium'],
+            justify=tk.LEFT
         )
-        subtitle_label.pack()
+        subtitle.pack(anchor='w', pady=(0, 20))
+        
+        # Botón call-to-action
+        self.cta_btn = tk.Button(
+            left_frame,
+            text="🧪 Ir al Laboratorio",
+            font=('Segoe UI', 12, 'bold'),
+            bg=COLORS['accent'],
+            fg='white',
+            activebackground=COLORS['accent_dark'],
+            activeforeground='white',
+            relief=tk.FLAT,
+            cursor='hand2',
+            padx=25,
+            pady=12,
+            command=self.go_to_lab
+        )
+        self.cta_btn.pack(anchor='w')
     
-    def create_stats_section(self, parent):
-        """Crea la sección de estadísticas rápidas."""
-        stats_frame = tk.Frame(parent, bg=COLORS['content_bg'])
-        stats_frame.pack(fill=tk.X, pady=(0, DIMENSIONS['space_xxl']))
+    def go_to_lab(self):
+        """Navega al laboratorio."""
+        if self.nav_callback:
+            self.nav_callback('laboratorio')
         
-        stats = [
-            (ICONS['microscope'], "11", "Sistemas\nDisponibles"),
-            (ICONS['graph'], "3", "Niveles de\nDificultad"),
-            (ICONS['clipboard'], "∞", "Ejercicios\nGenerados"),
-            (ICONS['star'], "100%", "Evaluación\nAutomática")
-        ]
+        # Lado derecho - Icono grande
+        right_frame = tk.Frame(inner, bg=COLORS['card_bg'])
+        right_frame.pack(side=tk.RIGHT, padx=(40, 0))
         
-        for i, (icon, value, label) in enumerate(stats):
-            stat_card = self.create_stat_card(stats_frame, icon, value, label)
-            stat_card.grid(row=0, column=i, padx=DIMENSIONS['space_md'], sticky="ew")
-            stats_frame.grid_columnconfigure(i, weight=1)
+        icon_bg = tk.Frame(right_frame, bg=COLORS['accent_light'], width=180, height=180)
+        icon_bg.pack_propagate(False)
+        icon_bg.pack()
+        
+        icon = tk.Label(
+            icon_bg,
+            text="📊",
+            font=('Segoe UI', 80),
+            bg=COLORS['accent_light']
+        )
+        icon.place(relx=0.5, rely=0.5, anchor='center')
     
-    def create_stat_card(self, parent, icon, value, label):
-        """Crea una tarjeta de estadística."""
-        card = tk.Frame(parent, bg='white', relief=tk.RAISED, borderwidth=1,
-                       highlightbackground=COLORS['border'], highlightthickness=1)
-        card.pack_propagate(False)
-        card.configure(height=120)
+    def create_featured_systems(self, parent):
+        """Crea la sección de sistemas destacados."""
+        # Título
+        title_frame = tk.Frame(parent, bg=COLORS['content_bg'])
+        title_frame.pack(fill=tk.X, pady=(0, 25))
         
-        # Icono
-        icon_label = tk.Label(card, text=icon, font=FONTS['icon'], bg='white')
-        icon_label.pack(pady=(DIMENSIONS['space_md'], DIMENSIONS['space_xs']))
-        
-        # Valor
-        value_label = tk.Label(card, text=value, font=FONTS['title'], bg='white', fg=COLORS['accent'])
-        value_label.pack()
-        
-        # Label
-        label_widget = tk.Label(card, text=label, font=FONTS['tiny'], bg='white', 
-                               fg=COLORS['text_muted'], justify=tk.CENTER)
-        label_widget.pack(pady=(0, DIMENSIONS['space_md']))
-        
-        return card
-    
-    def create_systems_grid(self, parent):
-        """Crea la grid de tarjetas de sistemas."""
-        # Título de sección
-        section_title = tk.Label(
-            parent,
-            text="💡 Sistemas Dinámicos Disponibles",
-            font=FONTS['section_title'],
+        tk.Label(
+            title_frame,
+            text="Sistemas Disponibles",
+            font=('Segoe UI', 24, 'bold'),
             bg=COLORS['content_bg'],
             fg=COLORS['text_dark']
-        )
-        section_title.pack(anchor='w', pady=(0, DIMENSIONS['space_lg']))
+        ).pack(side=tk.LEFT)
         
-        # Grid de tarjetas
-        cards_frame = tk.Frame(parent, bg=COLORS['content_bg'])
-        cards_frame.pack(fill=tk.BOTH, expand=True, pady=(0, DIMENSIONS['space_xxl']))
+        # Grid de sistemas
+        systems_grid = tk.Frame(parent, bg=COLORS['content_bg'])
+        systems_grid.pack(fill=tk.BOTH, expand=True, pady=(0, 40))
         
-        # Configurar grid responsive
+        # Configurar columnas
         for i in range(3):
-            cards_frame.grid_columnconfigure(i, weight=1)
+            systems_grid.grid_columnconfigure(i, weight=1, uniform='col')
         
-        # Sistemas disponibles con información mejorada
         systems = [
-            {
-                'icon': ICONS['newton'],
-                'title': 'Enfriamiento de Newton',
-                'description': 'Modelo de transferencia de calor que describe cómo un objeto se enfría exponencialmente.',
-                'color': COLORS['info'],
-                'level': 'Principiante'
-            },
-            {
-                'icon': ICONS['van_der_pol'],
-                'title': 'Oscilador Van der Pol',
-                'description': 'Sistema no lineal con amortiguamiento que exhibe ciclos límite estables.',
-                'color': COLORS['success'],
-                'level': 'Intermedio'
-            },
-            {
-                'icon': ICONS['sir'],
-                'title': 'Modelo SIR',
-                'description': 'Modelo epidemiológico para simular la propagación de enfermedades infecciosas.',
-                'color': COLORS['danger'],
-                'level': 'Intermedio'
-            },
-            {
-                'icon': ICONS['rlc'],
-                'title': 'Circuito RLC',
-                'description': 'Circuito eléctrico serie con resistencia, inductancia y capacitancia.',
-                'color': COLORS['warning'],
-                'level': 'Intermedio'
-            },
-            {
-                'icon': ICONS['lorenz'],
-                'title': 'Sistema de Lorenz',
-                'description': 'Sistema caótico tridimensional famoso por su atractor extraño ("Efecto Mariposa").',
-                'color': COLORS['info_light'],
-                'level': 'Avanzado'
-            },
-            {
-                'icon': ICONS['hopf'],
-                'title': 'Bifurcación de Hopf',
-                'description': 'Transición entre punto fijo estable y ciclo límite mediante parámetro de control.',
-                'color': COLORS['secondary'],
-                'level': 'Avanzado'
-            }
+            {'icon': '🌡️', 'name': 'Enfriamiento Newton', 'desc': 'Transferencia de calor', 'color': '#4299e1'},
+            {'icon': '📈', 'name': 'Van der Pol', 'desc': 'Oscilador no lineal', 'color': '#48bb78'},
+            {'icon': '🦠', 'name': 'Modelo SIR', 'desc': 'Epidemiología', 'color': '#f56565'},
+            {'icon': '⚡', 'name': 'Circuito RLC', 'desc': 'Circuitos eléctricos', 'color': '#ed8936'},
+            {'icon': '🌀', 'name': 'Sistema Lorenz', 'desc': 'Caos determinista', 'color': '#9f7aea'},
+            {'icon': '🔄', 'name': 'Bifurcación Hopf', 'desc': 'Transiciones críticas', 'color': '#3d5a80'}
         ]
         
-        # Crear tarjetas
         row, col = 0, 0
         for system in systems:
-            card = self.create_system_card_modern(cards_frame, system)
-            card.grid(row=row, column=col, padx=DIMENSIONS['space_md'], 
-                     pady=DIMENSIONS['space_md'], sticky="nsew")
+            card = self.create_system_card(systems_grid, system)
+            card.grid(row=row, column=col, padx=15, pady=15, sticky='nsew')
             
             col += 1
             if col > 2:
                 col = 0
                 row += 1
     
-    def create_system_card_modern(self, parent, system_info):
-        """Crea una tarjeta moderna de sistema con efectos hover."""
-        card = tk.Frame(
-            parent,
-            bg='white',
-            relief=tk.FLAT,
-            highlightbackground=COLORS['border'],
-            highlightthickness=1
-        )
-        
-        # Header de la tarjeta con color
-        header = tk.Frame(card, bg=system_info['color'], height=8)
-        header.pack(fill=tk.X)
+    def create_system_card(self, parent, system):
+        """Crea una tarjeta de sistema."""
+        card = tk.Frame(parent, bg=COLORS['card_bg'], relief=tk.FLAT,
+                       highlightbackground=COLORS['border'], highlightthickness=1)
         
         # Contenido
-        content = tk.Frame(card, bg='white')
-        content.pack(fill=tk.BOTH, expand=True, padx=DIMENSIONS['space_lg'], 
-                    pady=DIMENSIONS['space_lg'])
+        content = tk.Frame(card, bg=COLORS['card_bg'])
+        content.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
         
         # Icono
-        icon_label = tk.Label(
+        tk.Label(
             content,
-            text=system_info['icon'],
-            font=FONTS['icon_large'],
-            bg='white'
-        )
-        icon_label.pack()
+            text=system['icon'],
+            font=('Segoe UI', 40),
+            bg=COLORS['card_bg']
+        ).pack(pady=(0, 10))
         
-        # Título
-        title_label = tk.Label(
+        # Nombre
+        tk.Label(
             content,
-            text=system_info['title'],
-            font=FONTS['subsection'],
-            bg='white',
+            text=system['name'],
+            font=('Segoe UI', 14, 'bold'),
+            bg=COLORS['card_bg'],
             fg=COLORS['text_dark']
-        )
-        title_label.pack(pady=(DIMENSIONS['space_sm'], DIMENSIONS['space_xs']))
-        
-        # Badge de nivel
-        badge = tk.Label(
-            content,
-            text=system_info['level'],
-            font=FONTS['tiny'],
-            bg=system_info['color'],
-            fg='white',
-            padx=DIMENSIONS['space_sm'],
-            pady=DIMENSIONS['space_xs']
-        )
-        badge.pack()
+        ).pack()
         
         # Descripción
-        desc_label = tk.Label(
+        tk.Label(
             content,
-            text=system_info['description'],
-            font=FONTS['small'],
-            bg='white',
-            fg=COLORS['text_medium'],
-            wraplength=220,
-            justify=tk.CENTER
-        )
-        desc_label.pack(pady=(DIMENSIONS['space_md'], 0))
+            text=system['desc'],
+            font=('Segoe UI', 10),
+            bg=COLORS['card_bg'],
+            fg=COLORS['text_muted']
+        ).pack(pady=(5, 0))
         
         # Efecto hover
         def on_enter(e):
-            card.configure(highlightbackground=system_info['color'], highlightthickness=2)
-            header.configure(height=12)
+            card.configure(highlightbackground=system['color'], highlightthickness=2)
         
         def on_leave(e):
             card.configure(highlightbackground=COLORS['border'], highlightthickness=1)
-            header.configure(height=8)
         
         card.bind('<Enter>', on_enter)
         card.bind('<Leave>', on_leave)
-        
-        for widget in [card, content, icon_label, title_label, badge, desc_label]:
-            widget.bind('<Enter>', on_enter)
-            widget.bind('<Leave>', on_leave)
+        content.bind('<Enter>', on_enter)
+        content.bind('<Leave>', on_leave)
         
         return card
     
-    def create_features_section(self, parent):
-        """Crea la sección de características principales."""
-        # Título
-        section_title = tk.Label(
-            parent,
-            text="✨ Características Principales",
-            font=FONTS['section_title'],
-            bg=COLORS['content_bg'],
-            fg=COLORS['text_dark']
-        )
-        section_title.pack(anchor='w', pady=(0, DIMENSIONS['space_lg']))
+    def create_lab_info(self, parent):
+        """Crea la sección de información del laboratorio."""
+        lab_container = tk.Frame(parent, bg=COLORS['secondary'])
+        lab_container.pack(fill=tk.X, pady=(0, 40))
         
-        features_frame = tk.Frame(parent, bg=COLORS['content_bg'])
-        features_frame.pack(fill=tk.X, pady=(0, DIMENSIONS['space_xxl']))
-        
-        features = [
-            (ICONS['lab'], "Modo Laboratorio", "Ejercicios automáticos con evaluación instantánea"),
-            (ICONS['settings'], "Interfaz Intuitiva", "Diseño moderno y fácil de usar"),
-            (ICONS['graph'], "Análisis Cualitativo", "Interpretación automática sin cálculo pesado"),
-            (ICONS['book'], "Contenido Educativo", "Teoría completa y aplicaciones prácticas")
-        ]
-        
-        for i, (icon, title, desc) in enumerate(features):
-            feature_card = self.create_feature_card(features_frame, icon, title, desc)
-            feature_card.grid(row=i//2, column=i%2, padx=DIMENSIONS['space_md'], 
-                            pady=DIMENSIONS['space_sm'], sticky="ew")
-            features_frame.grid_columnconfigure(0, weight=1)
-            features_frame.grid_columnconfigure(1, weight=1)
-    
-    def create_feature_card(self, parent, icon, title, description):
-        """Crea una tarjeta de característica."""
-        card = tk.Frame(parent, bg=COLORS['input_bg'], relief=tk.FLAT)
-        card.pack_propagate(False)
-        card.configure(height=80)
-        
-        # Contenido horizontal
-        content = tk.Frame(card, bg=COLORS['input_bg'])
-        content.pack(fill=tk.BOTH, expand=True, padx=DIMENSIONS['space_lg'], pady=DIMENSIONS['space_md'])
-        
-        # Icono a la izquierda
-        icon_label = tk.Label(content, text=icon, font=FONTS['icon'], bg=COLORS['input_bg'])
-        icon_label.pack(side=tk.LEFT, padx=(0, DIMENSIONS['space_md']))
-        
-        # Texto a la derecha
-        text_container = tk.Frame(content, bg=COLORS['input_bg'])
-        text_container.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        
-        title_label = tk.Label(text_container, text=title, font=FONTS['subsection'],
-                              bg=COLORS['input_bg'], fg=COLORS['text_dark'], anchor='w')
-        title_label.pack(anchor='w')
-        
-        desc_label = tk.Label(text_container, text=description, font=FONTS['small'],
-                             bg=COLORS['input_bg'], fg=COLORS['text_muted'], anchor='w')
-        desc_label.pack(anchor='w')
-        
-        return card
-    
-    def create_quick_start(self, parent):
-        """Crea la guía de inicio rápido."""
-        # Contenedor con fondo
-        quick_start_container = tk.Frame(parent, bg=COLORS['secondary'], relief=tk.FLAT)
-        quick_start_container.pack(fill=tk.X, pady=(0, DIMENSIONS['space_xxl']))
-        
-        content = tk.Frame(quick_start_container, bg=COLORS['secondary'])
-        content.pack(fill=tk.X, padx=DIMENSIONS['space_xxl'], pady=DIMENSIONS['space_xl'])
+        content = tk.Frame(lab_container, bg=COLORS['secondary'])
+        content.pack(fill=tk.X, padx=50, pady=35)
         
         # Título
-        title = tk.Label(
+        tk.Label(
             content,
-            text=ICONS['target'] + " Guía de Inicio Rápido",
-            font=FONTS['section_title'],
+            text="🧪 Modo Laboratorio",
+            font=('Segoe UI', 22, 'bold'),
             bg=COLORS['secondary'],
             fg='white'
+        ).pack(anchor='w', pady=(0, 15))
+        
+        # Descripción
+        desc_text = (
+            "Experimenta con ejercicios generados automáticamente que se adaptan a tu nivel.\n"
+            "Cada ejercicio incluye:\n\n"
+            "• Parámetros aleatorios para práctica variada\n"
+            "• Preguntas teóricas y prácticas\n"
+            "• Evaluación automática con retroalimentación\n"
+            "• Análisis cualitativo del comportamiento del sistema"
         )
-        title.pack(anchor='w', pady=(0, DIMENSIONS['space_lg']))
         
-        # Pasos
-        steps = [
-            "1. Selecciona un sistema dinámico desde el menú lateral",
-            "2. Ajusta los parámetros usando los controles interactivos",
-            "3. Presiona 'Ejecutar Simulación' para visualizar el comportamiento",
-            "4. Analiza los gráficos y el análisis cualitativo automático",
-            "5. Prueba el Modo Laboratorio para generar ejercicios educativos"
-        ]
-        
-        for step in steps:
-            step_label = tk.Label(
-                content,
-                text=step,
-                font=FONTS['body'],
-                bg=COLORS['secondary'],
-                fg='white',
-                anchor='w'
-            )
-            step_label.pack(anchor='w', pady=DIMENSIONS['space_xs'])
+        tk.Label(
+            content,
+            text=desc_text,
+            font=('Segoe UI', 11),
+            bg=COLORS['secondary'],
+            fg='white',
+            justify=tk.LEFT
+        ).pack(anchor='w')
     
     def create_footer(self, parent):
-        """Crea el footer de la página."""
-        footer_frame = tk.Frame(parent, bg=COLORS['content_bg'])
-        footer_frame.pack(fill=tk.X, pady=(DIMENSIONS['space_lg'], 0))
+        """Crea el footer minimalista."""
+        footer = tk.Frame(parent, bg=COLORS['content_bg'])
+        footer.pack(fill=tk.X, pady=(20, 0))
         
         # Separador
-        separator = tk.Frame(footer_frame, height=1, bg=COLORS['border'])
-        separator.pack(fill=tk.X, pady=(0, DIMENSIONS['space_md']))
+        tk.Frame(footer, height=1, bg=COLORS['border']).pack(fill=tk.X, pady=(0, 15))
         
-        footer_text = tk.Label(
-            footer_frame,
-            text="🎓 Desarrollado para Modelado y Simulación • Universidad 2025\n"
-                 "Plataforma Educativa Interactiva • v2.0",
-            font=FONTS['small'],
+        # Texto del footer
+        tk.Label(
+            footer,
+            text="Plataforma Educativa de Sistemas Dinámicos • Universidad 2025",
+            font=('Segoe UI', 9),
             bg=COLORS['content_bg'],
-            fg=COLORS['text_muted'],
-            justify=tk.CENTER
-        )
-        footer_text.pack()
+            fg=COLORS['text_muted']
+        ).pack()

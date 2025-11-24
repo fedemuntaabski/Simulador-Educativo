@@ -18,6 +18,8 @@ class EjercicioState:
     _simulacion_ejecutada = False
     _datos_simulacion = None
     _start_time = None
+    _selected_system = 'newton'
+    _selected_difficulty = 'intermedio'
     
     def __new__(cls):
         """Implementa el patrón Singleton."""
@@ -164,3 +166,43 @@ class EjercicioState:
             dificultad = cls._ejercicio_actual.get('dificultad', 'intermedio')
             return f"{titulo} ({dificultad.upper()})"
         return None
+    
+    @classmethod
+    def set_selected_system(cls, system):
+        """
+        Guarda el sistema dinámico seleccionado.
+        
+        Args:
+            system: ID del sistema seleccionado
+        """
+        cls._selected_system = system
+    
+    @classmethod
+    def get_selected_system(cls):
+        """
+        Obtiene el sistema dinámico seleccionado.
+        
+        Returns:
+            String con el ID del sistema
+        """
+        return cls._selected_system
+    
+    @classmethod
+    def set_selected_difficulty(cls, difficulty):
+        """
+        Guarda el nivel de dificultad seleccionado.
+        
+        Args:
+            difficulty: Nivel de dificultad seleccionado
+        """
+        cls._selected_difficulty = difficulty
+    
+    @classmethod
+    def get_selected_difficulty(cls):
+        """
+        Obtiene el nivel de dificultad seleccionado.
+        
+        Returns:
+            String con el nivel de dificultad
+        """
+        return cls._selected_difficulty
