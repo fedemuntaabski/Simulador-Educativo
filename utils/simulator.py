@@ -12,6 +12,14 @@ class SystemSimulator:
     Clase base para simular sistemas dinámicos usando métodos numéricos.
     """
     
+    params = {}
+    ranges = {}
+    
+    @classmethod
+    def get_default_params(cls):
+        """Devuelve los parámetros por defecto del simulador."""
+        return {k: v.get('default') for k, v in cls.params.items()}
+    
     @staticmethod
     def solve_ode(func, y0, t_span, t_eval=None, **params):
         """
@@ -48,6 +56,15 @@ class SystemSimulator:
 
 class NewtonCoolingSimulator(SystemSimulator):
     """Simulador para la Ley de Enfriamiento de Newton."""
+    
+    params = {
+        'k': {'min': 0.01, 'max': 1.0, 'default': 0.1, 'desc': 'Constante de enfriamiento'},
+        'T_env': {'min': -20, 'max': 50, 'default': 20, 'desc': 'Temperatura ambiente'}
+    }
+    ranges = {
+        'k': (0.01, 1.0),
+        'T_env': (-20, 50)
+    }
     
     @staticmethod
     def cooling_law(t, T, k, T_env):
@@ -91,6 +108,13 @@ class NewtonCoolingSimulator(SystemSimulator):
 class VanDerPolSimulator(SystemSimulator):
     """Simulador para el oscilador de Van der Pol."""
     
+    params = {
+        'mu': {'min': 0.1, 'max': 10.0, 'default': 1.0, 'desc': 'Parámetro de no linealidad'}
+    }
+    ranges = {
+        'mu': (0.1, 10.0)
+    }
+    
     @staticmethod
     def van_der_pol(t, y, mu):
         """
@@ -133,6 +157,15 @@ class VanDerPolSimulator(SystemSimulator):
 
 class SIRSimulator(SystemSimulator):
     """Simulador para el modelo epidemiológico SIR."""
+    
+    params = {
+        'beta': {'min': 0.0, 'max': 2.0, 'default': 0.3, 'desc': 'Tasa de infección'},
+        'gamma': {'min': 0.0, 'max': 1.0, 'default': 0.1, 'desc': 'Tasa de recuperación'}
+    }
+    ranges = {
+        'beta': (0.0, 2.0),
+        'gamma': (0.0, 1.0)
+    }
     
     @staticmethod
     def sir_model(t, y, beta, gamma, N):
@@ -188,6 +221,19 @@ class SIRSimulator(SystemSimulator):
 class RLCSimulator(SystemSimulator):
     """Simulador para circuito RLC."""
     
+    params = {
+        'R': {'min': 0.1, 'max': 100.0, 'default': 10.0, 'desc': 'Resistencia'},
+        'L': {'min': 0.01, 'max': 2.0, 'default': 0.1, 'desc': 'Inductancia'},
+        'C': {'min': 0.0001, 'max': 0.01, 'default': 0.001, 'desc': 'Capacitancia'},
+        'V0': {'min': 0.0, 'max': 50.0, 'default': 10.0, 'desc': 'Voltaje entrada'}
+    }
+    ranges = {
+        'R': (0.1, 100.0),
+        'L': (0.01, 2.0),
+        'C': (0.0001, 0.01),
+        'V0': (0.0, 50.0)
+    }
+    
     @staticmethod
     def rlc_circuit(t, y, R, L, C, V0):
         """
@@ -240,6 +286,17 @@ class RLCSimulator(SystemSimulator):
 class LorenzSimulator(SystemSimulator):
     """Simulador para el sistema de Lorenz."""
     
+    params = {
+        'sigma': {'min': 1.0, 'max': 50.0, 'default': 10.0, 'desc': 'Número de Prandtl'},
+        'rho': {'min': 1.0, 'max': 100.0, 'default': 28.0, 'desc': 'Número de Rayleigh'},
+        'beta': {'min': 0.1, 'max': 10.0, 'default': 8/3, 'desc': 'Relación geométrica'}
+    }
+    ranges = {
+        'sigma': (1.0, 50.0),
+        'rho': (1.0, 100.0),
+        'beta': (0.1, 10.0)
+    }
+    
     @staticmethod
     def lorenz_system(t, y, sigma, rho, beta):
         """
@@ -288,6 +345,15 @@ class LorenzSimulator(SystemSimulator):
 class HopfSimulator(SystemSimulator):
     """Simulador para la bifurcación de Hopf."""
     
+    params = {
+        'mu': {'min': -5.0, 'max': 5.0, 'default': 0.5, 'desc': 'Parámetro de bifurcación'},
+        'omega': {'min': 0.1, 'max': 10.0, 'default': 1.0, 'desc': 'Frecuencia angular'}
+    }
+    ranges = {
+        'mu': (-5.0, 5.0),
+        'omega': (0.1, 10.0)
+    }
+    
     @staticmethod
     def hopf_system(t, state, mu, omega=1.0):
         """
@@ -318,6 +384,15 @@ class HopfSimulator(SystemSimulator):
 class LogisticSimulator(SystemSimulator):
     """Simulador para crecimiento logístico (continuo)."""
     
+    params = {
+        'r': {'min': 0.0, 'max': 2.0, 'default': 0.1, 'desc': 'Tasa de crecimiento'},
+        'K': {'min': 100, 'max': 2000, 'default': 1000, 'desc': 'Capacidad de carga'}
+    }
+    ranges = {
+        'r': (0.0, 2.0),
+        'K': (100, 2000)
+    }
+    
     @staticmethod
     def logistic_equation(t, N, r, K):
         """dN/dt = r * N * (1 - N/K)"""
@@ -340,6 +415,17 @@ class LogisticSimulator(SystemSimulator):
 class VerhulstSimulator:
     """Simulador para el mapa logístico (discreto)."""
     
+    params = {
+        'r': {'min': 0.0, 'max': 4.0, 'default': 3.0, 'desc': 'Tasa de crecimiento'}
+    }
+    ranges = {
+        'r': (0.0, 4.0)
+    }
+    
+    @classmethod
+    def get_default_params(cls):
+        return {k: v.get('default') for k, v in cls.params.items()}
+    
     @staticmethod
     def simulate(x0, r, steps=100):
         """
@@ -355,6 +441,13 @@ class VerhulstSimulator:
 
 class OrbitalSimulator(SystemSimulator):
     """Simulador de órbita simple (2 cuerpos)."""
+    
+    params = {
+        'GM': {'min': 100, 'max': 5000, 'default': 1000, 'desc': 'Parámetro gravitacional'}
+    }
+    ranges = {
+        'GM': (100, 5000)
+    }
     
     @staticmethod
     def orbital_system(t, state, GM):
@@ -382,6 +475,21 @@ class OrbitalSimulator(SystemSimulator):
 
 class DamperSimulator(SystemSimulator):
     """Simulador de oscilador amortiguado y forzado."""
+    
+    params = {
+        'm': {'min': 0.1, 'max': 10.0, 'default': 1.0, 'desc': 'Masa'},
+        'c': {'min': 0.0, 'max': 10.0, 'default': 0.5, 'desc': 'Amortiguamiento'},
+        'k': {'min': 0.1, 'max': 50.0, 'default': 2.0, 'desc': 'Constante elástica'},
+        'F0': {'min': 0.0, 'max': 20.0, 'default': 0.0, 'desc': 'Amplitud fuerza'},
+        'omega_f': {'min': 0.0, 'max': 10.0, 'default': 0.0, 'desc': 'Frecuencia fuerza'}
+    }
+    ranges = {
+        'm': (0.1, 10.0),
+        'c': (0.0, 10.0),
+        'k': (0.1, 50.0),
+        'F0': (0.0, 20.0),
+        'omega_f': (0.0, 10.0)
+    }
     
     @staticmethod
     def damped_oscillator(t, state, m, c, k, F0=0, omega_f=0):
