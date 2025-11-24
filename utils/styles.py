@@ -3,56 +3,56 @@ Configuración de estilos, colores y fuentes para la aplicación.
 Paleta moderna con enfoque en accesibilidad y experiencia de usuario.
 """
 
-# Paleta de colores moderna y profesional
+# Paleta de colores profesional - Azul y Grises
 COLORS = {
     # Fondos principales
-    'background': '#f5f7fa',          # Gris muy claro
-    'sidebar': '#1e2a38',             # Azul oscuro profesional
-    'sidebar_hover': '#2a3f54',       # Hover para sidebar
-    'header': '#f8f9fa',              # Gris claro
-    'content_bg': '#f8f9fa',          # Gris claro
+    'background': '#f8f9fa',          # Gris muy claro
+    'sidebar': '#2c3e50',             # Azul oscuro profesional
+    'sidebar_hover': '#34495e',       # Azul oscuro hover
+    'header': '#f5f6f7',              # Gris muy claro
+    'content_bg': '#f5f6f7',          # Gris muy claro
     
     # Botones y elementos interactivos
-    'button': '#3d5a80',              # Azul medio
-    'button_active': '#ee6c4d',       # Naranja vibrante para activo
-    'button_hover': '#98c1d9',        # Azul claro para hover
+    'button': '#3498db',              # Azul profesional
+    'button_active': '#2980b9',       # Azul oscuro activo
+    'button_hover': '#5dade2',        # Azul claro hover
     
     # Acentos y destacados
-    'accent': '#ee6c4d',              # Naranja principal
-    'accent_light': '#ffa07a',        # Naranja claro
-    'accent_dark': '#c9573d',         # Naranja oscuro
-    'secondary': '#3d5a80',           # Azul secundario
-    'secondary_light': '#98c1d9',     # Azul claro
+    'accent': '#3498db',              # Azul principal
+    'accent_light': '#85c1e9',        # Azul claro
+    'accent_dark': '#2471a3',         # Azul oscuro
+    'secondary': '#95a5a6',           # Gris azulado
+    'secondary_light': '#bdc3c7',     # Gris claro
     
     # Textos
-    'text_dark': '#1e2a38',           # Casi negro azulado
-    'text_medium': '#4a5568',         # Gris medio
-    'text_light': '#ffffff',          # Blanco
-    'text_muted': '#a0aec0',          # Gris claro
+    'text_dark': '#2c3e50',           # Azul oscuro
+    'text_medium': '#7f8c8d',         # Gris medio
+    'text_light': '#ecf0f1',          # Gris muy claro
+    'text_muted': '#95a5a6',          # Gris azulado
     
     # Estados y feedback
-    'success': '#48bb78',             # Verde éxito
-    'success_light': '#9ae6b4',       # Verde claro
-    'danger': '#f56565',              # Rojo peligro
-    'danger_light': '#fc8181',        # Rojo claro
-    'warning': '#ed8936',             # Naranja advertencia
-    'warning_light': '#fbd38d',       # Naranja claro
-    'info': '#4299e1',                # Azul información
-    'info_light': '#90cdf4',          # Azul claro
+    'success': '#27ae60',             # Verde profesional
+    'success_light': '#a9dfbf',       # Verde claro
+    'danger': '#e74c3c',              # Rojo profesional
+    'danger_light': '#f5b7b1',        # Rojo claro
+    'warning': '#f39c12',             # Naranja advertencia
+    'warning_light': '#fad7a0',       # Naranja claro
+    'info': '#3498db',                # Azul información
+    'info_light': '#d6eaf8',          # Azul muy claro
     
     # Elementos de UI
-    'border': '#e2e8f0',              # Borde sutil
-    'border_dark': '#cbd5e0',         # Borde más visible
-    'graph_bg': '#f8f9fa',            # Gris claro
-    'card_bg': '#f8f9fa',             # Gris claro
-    'card_shadow': '#e2e8f0',         # Sombra tarjetas
-    'input_bg': '#f1f3f4',            # Gris claro para inputs
-    'input_border': '#cbd5e0',        # Borde inputs
+    'border': '#dee2e6',              # Borde sutil
+    'border_dark': '#bdc3c7',         # Borde visible
+    'graph_bg': '#fafbfc',            # Gris muy claro para gráficos
+    'card_bg': '#fafbfc',             # Gris muy claro para tarjetas
+    'card_shadow': '#e8e8e8',         # Sombra tarjetas
+    'input_bg': '#fafbfc',            # Gris muy claro para inputs
+    'input_border': '#ced4da',        # Borde inputs
     
     # Gradientes (representados como tuplas de colores)
-    'gradient_primary': ('#ee6c4d', '#c9573d'),
-    'gradient_secondary': ('#3d5a80', '#2a4365'),
-    'gradient_success': ('#48bb78', '#38a169'),
+    'gradient_primary': ('#3498db', '#2980b9'),
+    'gradient_secondary': ('#5dade2', '#3498db'),
+    'gradient_success': ('#58d68d', '#27ae60'),
 }
 
 # Fuentes optimizadas para legibilidad
