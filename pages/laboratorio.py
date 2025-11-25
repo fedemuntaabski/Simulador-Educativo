@@ -378,7 +378,7 @@ class LaboratorioPage(tk.Frame):
         pass
     
     def mostrar_preguntas(self):
-        """Muestra las preguntas del ejercicio."""
+        """Muestra las preguntas del ejercicio con formato mejorado."""
         if not self.ejercicio_actual:
             return
         
@@ -387,73 +387,249 @@ class LaboratorioPage(tk.Frame):
             widget.destroy()
         
         self.respuestas = {}
+        preguntas = self.ejercicio_actual['preguntas']
+        
+        # Header principal
+        header_main = tk.Frame(self.preguntas_frame, bg=COLORS['accent'], height=60)
+        header_main.pack(fill=tk.X, pady=(0, 10))
+        header_main.pack_propagate(False)
+        
+        header_content = tk.Frame(header_main, bg=COLORS['accent'])
+        header_content.pack(fill=tk.BOTH, expand=True, padx=20)
         
         tk.Label(
-            self.preguntas_frame,
+            header_content,
             text="❓ PREGUNTAS DEL EJERCICIO",
-            font=FONTS['section_title'],
-            bg=COLORS['card_bg']
-        ).pack(pady=(20, 15))
+            font=('Segoe UI', 16, 'bold'),
+            bg=COLORS['accent'],
+            fg='white'
+        ).pack(side=tk.LEFT, pady=15)
         
-        for pregunta in self.ejercicio_actual['preguntas']:
+        # Contador de preguntas
+        num_numericas = sum(1 for p in preguntas if p['tipo'] == 'numerica')
+        num_multiple = sum(1 for p in preguntas if p['tipo'] == 'opcion_multiple')
+        
+        tk.Label(
+            header_content,
+            text=f"📊 {num_numericas} cálculo  |  📝 {num_multiple} selección",
+            font=('Segoe UI', 10),
+            bg=COLORS['accent'],
+            fg='#E0E0E0'
+        ).pack(side=tk.RIGHT, pady=15)
+        
+        # Información del ejercicio
+        info_frame = tk.Frame(self.preguntas_frame, bg='#E3F2FD')
+        info_frame.pack(fill=tk.X, padx=15, pady=(5, 15))
+        
+        dificultad_colores = {
+            'principiante': '#4CAF50',
+            'intermedio': '#FF9800',
+            'avanzado': '#F44336'
+        }
+        dificultad_icons = {
+            'principiante': '⭐',
+            'intermedio': '⭐⭐',
+            'avanzado': '⭐⭐⭐'
+        }
+        
+        dificultad = self.ejercicio_actual.get('dificultad', 'intermedio')
+        
+        tk.Label(
+            info_frame,
+            text=f"📚 {self.ejercicio_actual['titulo']}  |  "
+                 f"{dificultad_icons.get(dificultad, '⭐')} {dificultad.upper()}  |  "
+                 f"Total: {len(preguntas)} preguntas",
+            font=('Segoe UI', 10),
+            bg='#E3F2FD',
+            fg='#1565C0',
+            pady=8,
+            padx=15
+        ).pack(fill=tk.X)
+        
+        # Instrucciones breves
+        instruccion_frame = tk.Frame(self.preguntas_frame, bg='#FFF3E0')
+        instruccion_frame.pack(fill=tk.X, padx=15, pady=(0, 10))
+        
+        tk.Label(
+            instruccion_frame,
+            text="💡 Responde todas las preguntas y presiona 'Evaluar Respuestas' al finalizar",
+            font=('Segoe UI', 9, 'italic'),
+            bg='#FFF3E0',
+            fg='#E65100',
+            pady=6,
+            padx=15
+        ).pack(fill=tk.X)
+        
+        # Mostrar cada pregunta
+        for pregunta in preguntas:
             self.crear_pregunta_widget(pregunta)
+        
+        # Footer con botón de enviar
+        footer_frame = tk.Frame(self.preguntas_frame, bg=COLORS['card_bg'])
+        footer_frame.pack(fill=tk.X, pady=20, padx=15)
+        
+        tk.Button(
+            footer_frame,
+            text="✅ Evaluar Mis Respuestas",
+            font=('Segoe UI', 12, 'bold'),
+            bg='#4CAF50',
+            fg='white',
+            cursor='hand2',
+            command=self.evaluar_respuestas,
+            pady=12,
+            padx=30,
+            relief=tk.FLAT
+        ).pack(pady=10)
     
     def crear_pregunta_widget(self, pregunta):
-        """Crea el widget para una pregunta."""
-        # Frame para la pregunta
-        q_frame = tk.Frame(self.preguntas_frame, bg=COLORS['card_bg'], relief=tk.RAISED, borderwidth=1)
-        q_frame.pack(fill=tk.X, padx=20, pady=10)
+        """Crea el widget para una pregunta con diseño mejorado."""
+        # Colores según tipo de pregunta
+        tipo_colores = {
+            'numerica': {'header': '#2E7D32', 'icon': '🔢', 'label': 'CÁLCULO'},
+            'opcion_multiple': {'header': '#1565C0', 'icon': '📝', 'label': 'SELECCIÓN'}
+        }
         
-        # Texto de la pregunta
+        tipo_info = tipo_colores.get(pregunta['tipo'], {'header': '#424242', 'icon': '❓', 'label': 'PREGUNTA'})
+        
+        # Frame contenedor principal con borde redondeado simulado
+        container = tk.Frame(self.preguntas_frame, bg=COLORS['content_bg'])
+        container.pack(fill=tk.X, padx=15, pady=8)
+        
+        # Frame para la pregunta con sombra
+        q_frame = tk.Frame(container, bg=COLORS['card_bg'], relief=tk.GROOVE, borderwidth=2)
+        q_frame.pack(fill=tk.X, padx=2, pady=2)
+        
+        # Header con color según tipo
+        header_frame = tk.Frame(q_frame, bg=tipo_info['header'], height=35)
+        header_frame.pack(fill=tk.X)
+        header_frame.pack_propagate(False)
+        
+        # Número de pregunta e icono
+        header_content = tk.Frame(header_frame, bg=tipo_info['header'])
+        header_content.pack(fill=tk.BOTH, expand=True, padx=10)
+        
         tk.Label(
-            q_frame,
-            text=f"Pregunta {pregunta['id']}:",
+            header_content,
+            text=f"{tipo_info['icon']} Pregunta {pregunta['id']}",
             font=('Segoe UI', 11, 'bold'),
-            bg=COLORS['card_bg'],
+            bg=tipo_info['header'],
+            fg='white',
             anchor='w'
-        ).pack(fill=tk.X, padx=15, pady=(10, 5))
+        ).pack(side=tk.LEFT, pady=5)
         
+        # Etiqueta de tipo
         tk.Label(
-            q_frame,
+            header_content,
+            text=f"[ {tipo_info['label']} ]",
+            font=('Segoe UI', 9),
+            bg=tipo_info['header'],
+            fg='#E0E0E0',
+            anchor='e'
+        ).pack(side=tk.RIGHT, pady=5)
+        
+        # Cuerpo de la pregunta
+        body_frame = tk.Frame(q_frame, bg=COLORS['card_bg'])
+        body_frame.pack(fill=tk.X, padx=15, pady=15)
+        
+        # Texto de la pregunta con mejor formato
+        pregunta_label = tk.Label(
+            body_frame,
             text=pregunta['texto'],
-            font=FONTS['label'],
+            font=('Segoe UI', 11),
             bg=COLORS['card_bg'],
+            fg=COLORS['text_dark'],
             anchor='w',
-            wraplength=700,
+            wraplength=650,
             justify=tk.LEFT
-        ).pack(fill=tk.X, padx=15, pady=(0, 10))
+        )
+        pregunta_label.pack(fill=tk.X, pady=(0, 12))
+        
+        # Separador visual
+        separator = tk.Frame(body_frame, bg='#E0E0E0', height=1)
+        separator.pack(fill=tk.X, pady=(0, 12))
         
         # Campo de respuesta según tipo
         if pregunta['tipo'] == 'numerica':
-            respuesta_frame = tk.Frame(q_frame, bg=COLORS['card_bg'])
-            respuesta_frame.pack(fill=tk.X, padx=15, pady=(0, 15))
+            respuesta_frame = tk.Frame(body_frame, bg=COLORS['card_bg'])
+            respuesta_frame.pack(fill=tk.X)
             
-            tk.Label(respuesta_frame, text="Respuesta:", bg=COLORS['card_bg']).pack(side=tk.LEFT)
+            tk.Label(
+                respuesta_frame, 
+                text="📊 Tu respuesta:",
+                font=('Segoe UI', 10, 'bold'),
+                bg=COLORS['card_bg'],
+                fg=COLORS['text_dark']
+            ).pack(side=tk.LEFT)
             
-            entry = tk.Entry(respuesta_frame, font=FONTS['label'], width=15)
-            entry.pack(side=tk.LEFT, padx=10)
+            entry = tk.Entry(
+                respuesta_frame, 
+                font=('Segoe UI', 11), 
+                width=15,
+                relief=tk.SOLID,
+                borderwidth=1
+            )
+            entry.pack(side=tk.LEFT, padx=10, ipady=4)
             
-            tk.Label(respuesta_frame, text=pregunta.get('unidad', ''),
-                    bg=COLORS['card_bg'], fg=COLORS['text_muted']).pack(side=tk.LEFT)
+            unidad = pregunta.get('unidad', '')
+            if unidad:
+                tk.Label(
+                    respuesta_frame, 
+                    text=f"({unidad})",
+                    font=('Segoe UI', 10, 'italic'),
+                    bg=COLORS['card_bg'], 
+                    fg=COLORS['text_muted']
+                ).pack(side=tk.LEFT)
+            
+            # Hint si hay tolerancia
+            if pregunta.get('tolerancia'):
+                hint_frame = tk.Frame(body_frame, bg='#FFF8E1')
+                hint_frame.pack(fill=tk.X, pady=(10, 0))
+                tk.Label(
+                    hint_frame,
+                    text=f"💡 Se acepta tolerancia de ±{pregunta['tolerancia']}",
+                    font=('Segoe UI', 9, 'italic'),
+                    bg='#FFF8E1',
+                    fg='#F57C00',
+                    padx=10,
+                    pady=4
+                ).pack(anchor='w')
             
             self.respuestas[pregunta['id']] = entry
             
         elif pregunta['tipo'] == 'opcion_multiple':
+            tk.Label(
+                body_frame,
+                text="📋 Selecciona una opción:",
+                font=('Segoe UI', 10, 'bold'),
+                bg=COLORS['card_bg'],
+                fg=COLORS['text_dark']
+            ).pack(anchor='w', pady=(0, 8))
+            
             var = tk.IntVar(value=-1)
             self.respuestas[pregunta['id']] = var
             
+            opciones_frame = tk.Frame(body_frame, bg=COLORS['card_bg'])
+            opciones_frame.pack(fill=tk.X, padx=10)
+            
+            letras = ['A', 'B', 'C', 'D', 'E', 'F']
             for i, opcion in enumerate(pregunta['opciones']):
-                tk.Radiobutton(
-                    q_frame,
-                    text=opcion,
+                opcion_container = tk.Frame(opciones_frame, bg='#F5F5F5', relief=tk.FLAT)
+                opcion_container.pack(fill=tk.X, pady=3, ipady=3)
+                
+                rb = tk.Radiobutton(
+                    opcion_container,
+                    text=f" {letras[i]})  {opcion}",
                     variable=var,
                     value=i,
-                    font=FONTS['label'],
-                    bg=COLORS['card_bg'],
-                    anchor='w'
-                ).pack(fill=tk.X, padx=30, pady=2)
-            
-            tk.Label(q_frame, text="", bg=COLORS['card_bg']).pack(pady=5)  # Espaciado
+                    font=('Segoe UI', 10),
+                    bg='#F5F5F5',
+                    activebackground='#E3F2FD',
+                    selectcolor='#BBDEFB',
+                    anchor='w',
+                    padx=10,
+                    pady=2
+                )
+                rb.pack(fill=tk.X, anchor='w')
     
     def ejecutar_simulacion(self):
         """Ejecuta el ejercicio con los parámetros especificados."""
