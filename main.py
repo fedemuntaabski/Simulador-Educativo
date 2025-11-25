@@ -7,12 +7,47 @@ import tkinter as tk
 from tkinter import ttk
 import sys
 import os
+import subprocess
 
 # Agregar el directorio raíz al path para importaciones
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from utils.styles import COLORS, FONTS, DIMENSIONS, ICONS
 from utils.navigation import NavigationManager
+
+
+def install_requirements():
+    """
+    Instala automáticamente las dependencias desde requirements.txt
+    si no están instaladas.
+    """
+    requirements_file = os.path.join(os.path.dirname(__file__), 'requirements.txt')
+
+    if not os.path.exists(requirements_file):
+        print("⚠️  No se encontró requirements.txt")
+        return
+
+    try:
+        print("🔄 Verificando e instalando dependencias...")
+
+        # Instalar requirements usando pip
+        result = subprocess.run([
+            sys.executable, '-m', 'pip', 'install', '-r', requirements_file,
+            '--quiet', '--disable-pip-version-check'
+        ], capture_output=True, text=True, timeout=300)
+
+        if result.returncode == 0:
+            print("✅ Dependencias instaladas correctamente")
+        else:
+            print("⚠️  Error instalando dependencias:")
+            print(result.stderr)
+            print("Continuando con la aplicación...")
+
+    except subprocess.TimeoutExpired:
+        print("⚠️  Timeout instalando dependencias. Continuando...")
+    except Exception as e:
+        print(f"⚠️  Error instalando dependencias: {e}")
+        print("Continuando con la aplicación...")
 
 
 class SimulatorApp:
@@ -426,6 +461,9 @@ def main():
     """
     Función principal que crea y ejecuta la aplicación.
     """
+    # Instalar dependencias automáticamente
+    install_requirements()
+
     root = tk.Tk()
     app = SimulatorApp(root)
     app.run()
