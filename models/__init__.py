@@ -1,6 +1,6 @@
 """
 Modelos de datos para ejercicios educativos del laboratorio de sistemas dinámicos.
-Incluye estructuras completas, factory pattern y ejemplos predefinidos.
+ Incluye estructuras completas, factory pattern y ejemplos predefinidos.
 """
 
 from .exercise import (

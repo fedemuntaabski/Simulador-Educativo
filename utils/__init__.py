@@ -3,7 +3,7 @@ Paquete de utilidades para la aplicación de simulación.
 Incluye estilos, gráficos, simuladores y generadores de ejercicios.
 """
 
-from .styles import COLORS, FONTS, DIMENSIONS
+from .styles import COLORS, FONTS, DIMENSIONS, ICONS
 from .graph_helper import GraphCanvas, Graph3DCanvas
 
 # Simuladores
@@ -12,12 +12,17 @@ from .simulator import (
     VanDerPolSimulator,
     SIRSimulator,
     RLCSimulator,
-    LorenzSimulator
+    LorenzSimulator,
+    HopfSimulator,
+    LogisticSimulator,
+    VerhulstSimulator,
+    OrbitalSimulator,
+    DamperSimulator,
+    ButterflySimulator
 )
 
 # Generadores de ejercicios
 from .ejercicio_generator import EjercicioGenerator
-from .exercise_generator import generate_exercise
 
 # Sistema de evaluación
 from .evaluador import Evaluador
@@ -28,6 +33,7 @@ __all__ = [
     'COLORS',
     'FONTS',
     'DIMENSIONS',
+    'ICONS',
     'GraphCanvas',
     'Graph3DCanvas',
     
@@ -37,10 +43,15 @@ __all__ = [
     'SIRSimulator',
     'RLCSimulator',
     'LorenzSimulator',
+    'HopfSimulator',
+    'LogisticSimulator',
+    'VerhulstSimulator',
+    'OrbitalSimulator',
+    'DamperSimulator',
+    'ButterflySimulator',
     
     # Generadores de ejercicios
     'EjercicioGenerator',
-    'generate_exercise',
     
     # Evaluación
     'Evaluador',

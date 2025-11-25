@@ -8,6 +8,8 @@ from .van_der_pol import VanDerPolPage
 from .sir import SIRPage
 from .rlc import RLCPage
 from .lorenz import LorenzPage
+from .hopf import HopfPage
+from .laboratorio import LaboratorioPage
 
 __all__ = [
     'InicioPage',
@@ -15,5 +17,7 @@ __all__ = [
     'VanDerPolPage',
     'SIRPage',
     'RLCPage',
-    'LorenzPage'
+    'LorenzPage',
+    'HopfPage',
+    'LaboratorioPage'
 ]

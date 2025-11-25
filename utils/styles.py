@@ -124,14 +124,6 @@ DIMENSIONS = {
     'panel_min_height': 100,           # Alto mínimo panel
 }
 
-# Efectos visuales
-EFFECTS = {
-    'transition_speed': 200,           # ms para transiciones
-    'hover_lift': 2,                   # px elevación en hover
-    'shadow_blur': 10,                 # Radio desenfoque sombra
-    'animation_duration': 300,         # ms para animaciones
-}
-
 # Iconos y emojis organizados por categoría
 ICONS = {
     # Navegación

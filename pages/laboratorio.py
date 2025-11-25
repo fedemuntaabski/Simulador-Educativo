@@ -6,18 +6,8 @@ import tkinter as tk
 from tkinter import ttk, scrolledtext, messagebox
 from utils.styles import COLORS, FONTS
 from utils.ejercicio_generator import EjercicioGenerator
-from utils.exercise_generator import generate_exercise  # Nuevo generador
-from models.example_exercises import load_example_exercises  # Ejercicios de ejemplo
 from utils.evaluador import Evaluador
 from utils.ejercicio_state import EjercicioState
-from utils.simulator import (
-    NewtonCoolingSimulator, VanDerPolSimulator, SIRSimulator,
-    HopfSimulator, LogisticSimulator, VerhulstSimulator,
-    OrbitalSimulator, ButterflySimulator, DamperSimulator,
-    RLCSimulator, LorenzSimulator
-)
-from utils.graph_helper import GraphCanvas, Graph3DCanvas
-import matplotlib.pyplot as plt
 
 
 class LaboratorioPage(tk.Frame):
@@ -30,19 +20,10 @@ class LaboratorioPage(tk.Frame):
         super().__init__(parent, bg=COLORS['content_bg'])
         
         self.generator = EjercicioGenerator()
-        self.example_factory = None  # Factory de ejemplos desde models
         self.evaluador = Evaluador()
         self.ejercicio_actual = None
         self.respuestas = {}
-        self.simulador_actual = None
         self.nav_callback = None  # Para navegación a simuladores
-        
-        # Cargar ejercicios de ejemplo
-        try:
-            self.example_factory = load_example_exercises()
-            print(f"✓ Ejercicios de ejemplo cargados: {len(self.example_factory.get_all_exercises())} disponibles")
-        except Exception as e:
-            print(f"⚠ No se pudieron cargar ejercicios de ejemplo: {e}")
         
         self.create_widgets()
         
