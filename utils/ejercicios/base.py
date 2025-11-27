@@ -55,11 +55,12 @@ class EjercicioBase:
     
     @staticmethod
     def construir_ejercicio(sistema, titulo, dificultad, parametros,
-                           objetivos, instrucciones, preguntas, analisis):
+                           objetivos, instrucciones, preguntas, analisis,
+                           contexto=None, datos_adicionales=None):
         """
         Construye diccionario de ejercicio con estructura estándar.
         """
-        return {
+        ejercicio = {
             'sistema': sistema,
             'titulo': titulo,
             'dificultad': dificultad,
@@ -69,17 +70,18 @@ class EjercicioBase:
             'preguntas': preguntas,
             'analisis_requerido': analisis
         }
+        
+        if contexto:
+            ejercicio['contexto'] = contexto
+        
+        if datos_adicionales:
+            ejercicio['datos_adicionales'] = datos_adicionales
+        
+        return ejercicio
     
     @staticmethod
     def param_aleatorio(nivel, config):
-        """
-        Obtiene parámetros según nivel de dificultad.
-        
-        Args:
-            nivel: int (1, 2, 3)
-            config: dict con configuración por nivel
-                   {1: valor_o_funcion, 2: ..., 3: ...}
-        """
+        """Obtiene parámetros según nivel de dificultad."""
         if nivel in config:
             val = config[nivel]
             return val() if callable(val) else val
@@ -125,4 +127,94 @@ class PreguntaBuilder:
             'respuesta_esperada': esperada,
             'tolerancia': tolerancia,
             'unidad': unidad
+        }
+
+
+class ConsignaBuilder:
+    """
+    Builder para construir consignas de forma estandarizada.
+    Reduce duplicación en los métodos _construir_consigna_*.
+    """
+    
+    SEPARADOR = "═" * 63
+    
+    @staticmethod
+    def crear(titulo, contexto_texto, datos, modelo, se_pide, experimento=None, notas=None):
+        """
+        Crea una consigna estandarizada.
+        
+        Args:
+            titulo: Título del ejercicio (ej: "ENFRIAMIENTO DE NEWTON")
+            contexto_texto: Lista de líneas de contexto/situación
+            datos: Lista de tuplas (nombre, valor, unidad) para la sección DATOS
+            modelo: Dict con 'titulo' y 'ecuaciones' (lista de strings)
+            se_pide: Lista de strings con los items a resolver
+            experimento: String opcional con sugerencia de experimento
+            notas: Lista opcional de strings con notas adicionales
+            
+        Returns:
+            dict con 'instrucciones', 'datos', 'analisis'
+        """
+        instrucciones = [
+            ConsignaBuilder.SEPARADOR,
+            f"              {titulo} - CONSIGNA",
+            ConsignaBuilder.SEPARADOR,
+            "",
+        ]
+        
+        # Sección contexto/situación
+        if contexto_texto:
+            instrucciones.append("📋 SITUACIÓN:")
+            for linea in contexto_texto:
+                instrucciones.append(f"   {linea}")
+            instrucciones.append("")
+        
+        # Sección datos
+        instrucciones.append("📊 DATOS:")
+        for dato in datos:
+            if len(dato) == 3:
+                nombre, valor, unidad = dato
+                instrucciones.append(f"   • {nombre}: {valor} {unidad}".strip())
+            else:
+                nombre, valor = dato
+                instrucciones.append(f"   • {nombre}: {valor}")
+        instrucciones.append("")
+        
+        # Sección modelo matemático
+        if modelo:
+            instrucciones.append(f"📐 {modelo.get('titulo', 'MODELO MATEMÁTICO')}:")
+            for eq in modelo.get('ecuaciones', []):
+                instrucciones.append(f"   {eq}")
+            instrucciones.append("")
+        
+        # Sección se pide
+        instrucciones.append("🎯 SE PIDE:")
+        for i, item in enumerate(se_pide):
+            letra = chr(ord('a') + i)
+            instrucciones.append(f"   {letra}) {item}")
+        instrucciones.append("")
+        
+        # Experimento sugerido
+        if experimento:
+            instrucciones.append(f"💡 EXPERIMENTO: {experimento}")
+            instrucciones.append("")
+        
+        # Notas adicionales
+        if notas:
+            for nota in notas:
+                instrucciones.append(f"📈 {nota}")
+            instrucciones.append("")
+        
+        # Construir datos simplificados
+        datos_dict = {}
+        for dato in datos:
+            if len(dato) >= 2:
+                # Limpiar el nombre para usarlo como clave
+                clave = dato[0].split('(')[0].strip().lower().replace(' ', '_')
+                datos_dict[clave] = dato[1]
+        
+        return {
+            'instrucciones': instrucciones,
+            'datos': datos_dict,
+            'analisis': []
         }

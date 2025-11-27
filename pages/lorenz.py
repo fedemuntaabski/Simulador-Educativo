@@ -4,7 +4,7 @@ Página de simulación del Sistema de Lorenz (Atractor Caótico).
 
 import tkinter as tk
 from tkinter import ttk
-from utils.styles import COLORS, FONTS, DIMENSIONS
+from utils.styles import COLORS, FONTS, DIMENSIONS, GRAPH_STYLE
 from utils.graph_helper import Graph3DCanvas
 from utils.simulator import LorenzSimulator
 
@@ -25,6 +25,9 @@ class LorenzPage(tk.Frame):
         self.rho_var = tk.DoubleVar(value=28.0)
         self.beta_var = tk.DoubleVar(value=2.667)
         self.t_max_var = tk.DoubleVar(value=40.0)
+        
+        # Variables para mostrar valores formateados
+        self.display_vars = {}
         
         self.create_widgets()
     
@@ -63,26 +66,9 @@ class LorenzPage(tk.Frame):
         )
         init_label.pack(pady=(5, 10), padx=20, anchor='w')
         
-        self.create_parameter_control(
-            control_frame,
-            "x₀",
-            self.x0_var,
-            -10, 10, 0.5
-        )
-        
-        self.create_parameter_control(
-            control_frame,
-            "y₀",
-            self.y0_var,
-            -10, 10, 0.5
-        )
-        
-        self.create_parameter_control(
-            control_frame,
-            "z₀",
-            self.z0_var,
-            -10, 10, 0.5
-        )
+        self.create_parameter_control(control_frame, "x₀", self.x0_var, -10, 10, 0.5, 'x0')
+        self.create_parameter_control(control_frame, "y₀", self.y0_var, -10, 10, 0.5, 'y0')
+        self.create_parameter_control(control_frame, "z₀", self.z0_var, -10, 10, 0.5, 'z0')
         
         # Parámetros del sistema
         params_label = tk.Label(
@@ -94,33 +80,10 @@ class LorenzPage(tk.Frame):
         )
         params_label.pack(pady=(15, 10), padx=20, anchor='w')
         
-        self.create_parameter_control(
-            control_frame,
-            "σ (sigma)",
-            self.sigma_var,
-            1, 20, 0.5
-        )
-        
-        self.create_parameter_control(
-            control_frame,
-            "ρ (rho)",
-            self.rho_var,
-            1, 50, 1
-        )
-        
-        self.create_parameter_control(
-            control_frame,
-            "β (beta)",
-            self.beta_var,
-            0.5, 5.0, 0.1
-        )
-        
-        self.create_parameter_control(
-            control_frame,
-            "Tiempo Máximo",
-            self.t_max_var,
-            10, 100, 5
-        )
+        self.create_parameter_control(control_frame, "σ (sigma)", self.sigma_var, 1, 20, 0.5, 'sigma')
+        self.create_parameter_control(control_frame, "ρ (rho)", self.rho_var, 1, 50, 1, 'rho')
+        self.create_parameter_control(control_frame, "β (beta)", self.beta_var, 0.5, 5.0, 0.1, 'beta')
+        self.create_parameter_control(control_frame, "Tiempo Máximo", self.t_max_var, 10, 100, 5, 't_max')
         
         # Botones
         button_frame = tk.Frame(control_frame, bg=COLORS['header'])
@@ -190,8 +153,8 @@ class LorenzPage(tk.Frame):
         )
         eq3.pack(pady=(0, 10))
     
-    def create_parameter_control(self, parent, label_text, variable, min_val, max_val, resolution):
-        """Crea un control de parámetro con slider."""
+    def create_parameter_control(self, parent, label_text, variable, min_val, max_val, resolution, param_id):
+        """Crea un control de parámetro con slider y valor formateado."""
         container = tk.Frame(parent, bg=COLORS['header'])
         container.pack(pady=6, padx=20, fill=tk.X)
         
@@ -207,19 +170,24 @@ class LorenzPage(tk.Frame):
         slider_frame = tk.Frame(container, bg=COLORS['header'])
         slider_frame.pack(fill=tk.X, pady=(3, 0))
         
+        # Variable para mostrar valor formateado
+        display_var = tk.StringVar(value=f"{variable.get():.2f}")
+        self.display_vars[param_id] = display_var
+        
         slider = ttk.Scale(
             slider_frame,
             from_=min_val,
             to=max_val,
             variable=variable,
             orient=tk.HORIZONTAL,
-            length=DIMENSIONS['slider_length']
+            length=DIMENSIONS['slider_length'],
+            command=lambda v, dv=display_var: dv.set(f"{float(v):.2f}")
         )
         slider.pack(side=tk.LEFT, fill=tk.X, expand=True)
         
         value_label = tk.Label(
             slider_frame,
-            textvariable=variable,
+            textvariable=display_var,
             font=FONTS['value'],
             bg=COLORS['header'],
             fg=COLORS['accent'],
@@ -263,21 +231,24 @@ class LorenzPage(tk.Frame):
         # Crear gradiente de color basado en el tiempo
         colors = t
         
-        self.graph.ax.plot(x, y, z, linewidth=0.5, alpha=0.7, color='blue')
+        self.graph.ax.plot(x, y, z, linewidth=0.8, alpha=0.8, 
+                          color=GRAPH_STYLE['colors']['primary'])
         scatter = self.graph.ax.scatter(x, y, z, c=colors, cmap='viridis', 
                                        s=1, alpha=0.6)
         
-        # Marcar inicio y fin
-        self.graph.ax.scatter([x[0]], [y[0]], [z[0]], color='green', 
-                             s=100, marker='o', label='Inicio')
-        self.graph.ax.scatter([x[-1]], [y[-1]], [z[-1]], color='red', 
-                             s=100, marker='s', label='Final')
+        # Marcar inicio y fin con colores mejorados
+        self.graph.ax.scatter([x[0]], [y[0]], [z[0]], 
+                             color=GRAPH_STYLE['colors']['success'], 
+                             s=GRAPH_STYLE['marker_size'], marker='o', label='Inicio')
+        self.graph.ax.scatter([x[-1]], [y[-1]], [z[-1]], 
+                             color=GRAPH_STYLE['colors']['danger'], 
+                             s=GRAPH_STYLE['marker_size'], marker='s', label='Final')
         
         self.graph.set_labels(
             xlabel='X',
             ylabel='Y',
             zlabel='Z',
-            title=f'Atractor de Lorenz (σ={sigma}, ρ={rho}, β={beta:.2f})'
+            title=f'Atractor de Lorenz (σ={sigma:.2f}, ρ={rho:.2f}, β={beta:.2f})'
         )
         
         self.graph.legend()

@@ -4,7 +4,7 @@ Página de simulación de la Bifurcación de Hopf.
 
 import tkinter as tk
 from tkinter import ttk
-from utils.styles import COLORS, FONTS, DIMENSIONS
+from utils.styles import COLORS, FONTS, DIMENSIONS, GRAPH_STYLE
 from utils.graph_helper import GraphCanvas
 from utils.simulator import HopfSimulator
 
@@ -23,6 +23,9 @@ class HopfPage(tk.Frame):
         self.mu_var = tk.DoubleVar(value=0.5)
         self.omega_var = tk.DoubleVar(value=1.0)
         self.t_max_var = tk.DoubleVar(value=50.0)
+        
+        # Variables para mostrar valores formateados
+        self.display_vars = {}
         
         self.create_widgets()
     
@@ -52,13 +55,13 @@ class HopfPage(tk.Frame):
         title.pack(pady=(15, 20), padx=20)
         
         # Condiciones iniciales
-        self.create_parameter_control(control_frame, "x₀", self.x0_var, -2, 2, 0.1)
-        self.create_parameter_control(control_frame, "y₀", self.y0_var, -2, 2, 0.1)
+        self.create_parameter_control(control_frame, "x₀", self.x0_var, -2, 2, 0.1, 'x0')
+        self.create_parameter_control(control_frame, "y₀", self.y0_var, -2, 2, 0.1, 'y0')
         
         # Parámetro de bifurcación
-        self.create_parameter_control(control_frame, "μ (bifurcación)", self.mu_var, -2, 3, 0.1)
-        self.create_parameter_control(control_frame, "ω (frecuencia)", self.omega_var, 0.1, 3, 0.1)
-        self.create_parameter_control(control_frame, "Tiempo Máximo", self.t_max_var, 10, 100, 5)
+        self.create_parameter_control(control_frame, "μ (bifurcación)", self.mu_var, -2, 3, 0.1, 'mu')
+        self.create_parameter_control(control_frame, "ω (frecuencia)", self.omega_var, 0.1, 3, 0.1, 'omega')
+        self.create_parameter_control(control_frame, "Tiempo Máximo", self.t_max_var, 10, 100, 5, 't_max')
         
         # Botones
         button_frame = tk.Frame(control_frame, bg=COLORS['header'])
@@ -93,8 +96,8 @@ class HopfPage(tk.Frame):
                 font=FONTS['small'], bg='white', fg=COLORS['text_muted'],
                 justify=tk.CENTER).pack(pady=(5, 10))
     
-    def create_parameter_control(self, parent, label_text, variable, min_val, max_val, resolution):
-        """Crea un control de parámetro con slider."""
+    def create_parameter_control(self, parent, label_text, variable, min_val, max_val, resolution, param_id):
+        """Crea un control de parámetro con slider y valor formateado."""
         container = tk.Frame(parent, bg=COLORS['header'])
         container.pack(pady=10, padx=20, fill=tk.X)
         
@@ -104,11 +107,16 @@ class HopfPage(tk.Frame):
         slider_frame = tk.Frame(container, bg=COLORS['header'])
         slider_frame.pack(fill=tk.X, pady=(5, 0))
         
+        # Variable para mostrar valor formateado
+        display_var = tk.StringVar(value=f"{variable.get():.2f}")
+        self.display_vars[param_id] = display_var
+        
         ttk.Scale(slider_frame, from_=min_val, to=max_val, variable=variable,
-                 orient=tk.HORIZONTAL, length=DIMENSIONS['slider_length']).pack(
+                 orient=tk.HORIZONTAL, length=DIMENSIONS['slider_length'],
+                 command=lambda v, dv=display_var: dv.set(f"{float(v):.2f}")).pack(
                  side=tk.LEFT, fill=tk.X, expand=True)
         
-        tk.Label(slider_frame, textvariable=variable, font=FONTS['value'],
+        tk.Label(slider_frame, textvariable=display_var, font=FONTS['value'],
                 bg=COLORS['header'], fg=COLORS['accent'], width=8).pack(
                 side=tk.LEFT, padx=(10, 0))
     
@@ -134,11 +142,14 @@ class HopfPage(tk.Frame):
         t, x, y = HopfSimulator.simulate(x0, y0, mu, omega, t_max)
         
         self.graph.clear()
-        self.graph.plot(x, y, 'b-', linewidth=1.5, label=f'μ={mu}')
-        self.graph.scatter([x[0]], [y[0]], color='green', s=100, marker='o', label='Inicio', zorder=5)
-        self.graph.scatter([x[-1]], [y[-1]], color='red', s=100, marker='s', label='Final', zorder=5)
+        self.graph.plot(x, y, color=GRAPH_STYLE['colors']['primary'], 
+                       linewidth=GRAPH_STYLE['linewidth'], label=f'μ={mu:.2f}')
+        self.graph.scatter([x[0]], [y[0]], color=GRAPH_STYLE['colors']['success'], 
+                          s=GRAPH_STYLE['marker_size'], marker='o', label='Inicio', zorder=5)
+        self.graph.scatter([x[-1]], [y[-1]], color=GRAPH_STYLE['colors']['danger'], 
+                          s=GRAPH_STYLE['marker_size'], marker='s', label='Final', zorder=5)
         
-        title = f'Bifurcación de Hopf (μ={mu}) - '
+        title = f'Bifurcación de Hopf (μ={mu:.2f}) - '
         title += 'Punto Fijo Estable' if mu < 0 else 'Ciclo Límite'
         
         self.graph.set_labels(xlabel='x', ylabel='y', title=title)

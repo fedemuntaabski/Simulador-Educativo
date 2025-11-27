@@ -94,37 +94,37 @@ class LaboratorioPage(tk.Frame):
         saved_system = EjercicioState.get_selected_system()
         self.sistema_var = tk.StringVar(value=saved_system)
         sistemas = [
-            ('📚 EJERCICIOS CLÁSICOS', 'separator'),
-            ('Enfriamiento Newton', 'newton'),
-            ('Van der Pol', 'van_der_pol'),
-            ('Modelo SIR', 'sir'),
+            ('📚 SISTEMAS DINÁMICOS', 'separator'),
+            ('Enfriamiento de Newton', 'newton'),
+            ('Oscilador Van der Pol', 'van_der_pol'),
+            ('Epidemiología SIR', 'sir'),
             ('Circuito RLC', 'rlc'),
-            ('Sistema Lorenz', 'lorenz'),
-            ('Bifurcación Hopf', 'hopf'),
-            ('Modelo Logístico', 'logistico'),
-            ('Mapa Verhulst', 'verhulst'),
-            ('Órbitas Espaciales', 'orbital'),
-            ('Atractor Mariposa', 'mariposa'),
-            ('Amortiguador', 'amortiguador'),
+            ('Atractor de Lorenz', 'lorenz'),
+            ('Bifurcación de Hopf', 'hopf'),
+            ('Crecimiento Logístico', 'logistico'),
+            ('Mapa de Verhulst', 'verhulst'),
+            ('Mecánica Orbital', 'orbital'),
+            ('Atractor de Rössler', 'mariposa'),
+            ('Oscilador Amortiguado', 'amortiguador'),
             ('', 'separator2'),
-            ('🎓 EJERCICIOS EDUCATIVOS AVANZADOS', 'separator3'),
-            ('1. Equilibrio Sistema Logístico', 'equilibrio_logistico'),
-            ('2. Transiciones Verhulst', 'verhulst_transiciones'),
-            ('3. Análisis de Amortiguamiento', 'amortiguamiento_analisis'),
-            ('4. Ciclos Límite Van der Pol', 'ciclo_limite'),
-            ('5. Aparición Bifurcación Hopf', 'hopf_aparicion'),
-            ('6. Resonancia RLC', 'rlc_resonancia'),
-            ('7. Propagación Epidemias SIR', 'sir_propagacion'),
-            ('8. Sensibilidad Lorenz', 'lorenz_sensibilidad'),
-            ('9. Leyes de Kepler', 'orbital_kepler'),
-            ('10. Transferencia Hohmann', 'orbital_hohmann'),
-            ('11. Enfriamiento Newton', 'newton_enfriamiento'),
-            ('12. Carga Capacitor RC', 'rc_carga'),
-            ('13. Comparación Crecimiento', 'crecimiento_comparacion'),
-            ('14. Estabilidad Lineal', 'estabilidad_lineal'),
-            ('15. SIR con Vacunación', 'sir_vacunacion'),
-            ('16. Perturbaciones Orbitales', 'orbital_perturbaciones'),
-            ('17. Oscilador Forzado', 'oscilador_forzado')
+            ('🎓 EJERCICIOS AVANZADOS', 'separator3'),
+            ('Equilibrio Poblacional', 'equilibrio_logistico'),
+            ('Transiciones al Caos', 'verhulst_transiciones'),
+            ('Análisis de Amortiguamiento', 'amortiguamiento_analisis'),
+            ('Ciclos Límite', 'ciclo_limite'),
+            ('Aparición de Bifurcaciones', 'hopf_aparicion'),
+            ('Resonancia Eléctrica', 'rlc_resonancia'),
+            ('Propagación de Epidemias', 'sir_propagacion'),
+            ('Sensibilidad al Caos', 'lorenz_sensibilidad'),
+            ('Leyes de Kepler', 'orbital_kepler'),
+            ('Transferencia Orbital', 'orbital_hohmann'),
+            ('Transferencia de Calor', 'newton_enfriamiento'),
+            ('Carga de Capacitor', 'rc_carga'),
+            ('Comparación de Modelos', 'crecimiento_comparacion'),
+            ('Estabilidad de Sistemas', 'estabilidad_lineal'),
+            ('Vacunación y Epidemias', 'sir_vacunacion'),
+            ('Perturbaciones Orbitales', 'orbital_perturbaciones'),
+            ('Oscilador Forzado', 'oscilador_forzado')
         ]
         
         sistema_combo = ttk.Combobox(
@@ -321,29 +321,45 @@ class LaboratorioPage(tk.Frame):
             messagebox.showerror("Error", f"No se pudo generar el ejercicio:\n{str(e)}")
     
     def mostrar_instrucciones(self):
-        """Muestra las instrucciones del ejercicio."""
+        """Muestra las instrucciones del ejercicio con formato mejorado."""
         if not self.ejercicio_actual:
             return
         
         ej = self.ejercicio_actual
         texto = []
         
-        texto.append(f"{'='*60}\n")
-        texto.append(f"{ej['titulo']}\n")
-        texto.append(f"{'='*60}\n\n")
-        texto.append(f"🎯 DIFICULTAD: {ej['dificultad'].upper()}\n\n")
+        # Las instrucciones ahora vienen pre-formateadas del generador
+        if isinstance(ej['instrucciones'], list):
+            # Nuevo formato con consigna detallada
+            for linea in ej['instrucciones']:
+                texto.append(f"{linea}\n")
+        else:
+            # Formato antiguo (fallback)
+            texto.append(f"{'='*60}\n")
+            texto.append(f"{ej['titulo']}\n")
+            texto.append(f"{'='*60}\n\n")
+            texto.append(f"🎯 DIFICULTAD: {ej['dificultad'].upper()}\n\n")
+            
+            texto.append("📋 OBJETIVOS DE APRENDIZAJE:\n")
+            for i, objetivo in enumerate(ej['objetivos'], 1):
+                texto.append(f"  {i}. {objetivo}\n")
+            texto.append("\n")
+            
+            texto.append("📝 INSTRUCCIONES:\n")
+            for instr in ej['instrucciones']:
+                texto.append(f"  {instr}\n")
+            texto.append("\n")
         
-        texto.append("📋 OBJETIVOS DE APRENDIZAJE:\n")
-        for i, objetivo in enumerate(ej['objetivos'], 1):
-            texto.append(f"  {i}. {objetivo}\n")
-        texto.append("\n")
+        # Agregar objetivos de aprendizaje si no están en las instrucciones
+        if '📋 OBJETIVOS' not in ''.join(texto) and 'OBJETIVOS' not in ''.join(texto):
+            texto.append("\n")
+            texto.append("📋 OBJETIVOS DE APRENDIZAJE:\n")
+            for i, objetivo in enumerate(ej['objetivos'], 1):
+                texto.append(f"  {i}. {objetivo}\n")
         
-        texto.append("📝 INSTRUCCIONES:\n")
-        for instr in ej['instrucciones']:
-            texto.append(f"  {instr}\n")
-        texto.append("\n")
-        
-        if 'analisis_requerido' in ej:
+        # Agregar análisis requerido
+        if 'analisis_requerido' in ej and ej['analisis_requerido']:
+            texto.append("\n")
             texto.append("🔬 ANÁLISIS REQUERIDO:\n")
             for analisis in ej['analisis_requerido']:
                 texto.append(f"  • {analisis}\n")

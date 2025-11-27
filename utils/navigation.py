@@ -4,12 +4,12 @@ Gestor de navegación entre páginas de la aplicación.
 
 import tkinter as tk
 from pages.inicio import InicioPage
-from pages.newton import NewtonPage
-from pages.van_der_pol import VanDerPolPage
-from pages.sir import SIRPage
-from pages.rlc import RLCPage
-from pages.lorenz import LorenzPage
-from pages.hopf import HopfPage
+from pages.newton_new import NewtonPage
+from pages.van_der_pol_new import VanDerPolPage
+from pages.sir_new import SIRPage
+from pages.rlc_new import RLCPage
+from pages.lorenz_new import LorenzPage
+from pages.hopf_new import HopfPage
 from pages.laboratorio import LaboratorioPage
 
 

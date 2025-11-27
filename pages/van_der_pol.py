@@ -4,7 +4,7 @@ Página de simulación del Oscilador de Van der Pol.
 
 import tkinter as tk
 from tkinter import ttk
-from utils.styles import COLORS, FONTS, DIMENSIONS
+from utils.styles import COLORS, FONTS, DIMENSIONS, GRAPH_STYLE
 from utils.graph_helper import GraphCanvas
 from utils.simulator import VanDerPolSimulator
 
@@ -23,6 +23,9 @@ class VanDerPolPage(tk.Frame):
         self.v0_var = tk.DoubleVar(value=0.0)
         self.mu_var = tk.DoubleVar(value=1.0)
         self.t_max_var = tk.DoubleVar(value=50.0)
+        
+        # Variables para mostrar valores formateados
+        self.display_vars = {}
         
         self.create_widgets()
     
@@ -56,7 +59,8 @@ class VanDerPolPage(tk.Frame):
             control_frame,
             "Posición Inicial x(0)",
             self.x0_var,
-            -3, 3, 0.1
+            -3, 3, 0.1,
+            'x0'
         )
         
         # Velocidad inicial
@@ -64,7 +68,8 @@ class VanDerPolPage(tk.Frame):
             control_frame,
             "Velocidad Inicial dx/dt(0)",
             self.v0_var,
-            -3, 3, 0.1
+            -3, 3, 0.1,
+            'v0'
         )
         
         # Parámetro μ
@@ -72,7 +77,8 @@ class VanDerPolPage(tk.Frame):
             control_frame,
             "Parámetro μ (no linealidad)",
             self.mu_var,
-            0.1, 10.0, 0.1
+            0.1, 10.0, 0.1,
+            'mu'
         )
         
         # Tiempo máximo
@@ -80,7 +86,8 @@ class VanDerPolPage(tk.Frame):
             control_frame,
             "Tiempo Máximo",
             self.t_max_var,
-            10, 100, 5
+            10, 100, 5,
+            't_max'
         )
         
         # Botones
@@ -142,8 +149,8 @@ class VanDerPolPage(tk.Frame):
         )
         eq2.pack(pady=(0, 10))
     
-    def create_parameter_control(self, parent, label_text, variable, min_val, max_val, resolution):
-        """Crea un control de parámetro con slider."""
+    def create_parameter_control(self, parent, label_text, variable, min_val, max_val, resolution, param_id):
+        """Crea un control de parámetro con slider y valor formateado a 2 decimales."""
         container = tk.Frame(parent, bg=COLORS['header'])
         container.pack(pady=10, padx=20, fill=tk.X)
         
@@ -159,19 +166,24 @@ class VanDerPolPage(tk.Frame):
         slider_frame = tk.Frame(container, bg=COLORS['header'])
         slider_frame.pack(fill=tk.X, pady=(5, 0))
         
+        # Variable para mostrar valor formateado
+        display_var = tk.StringVar(value=f"{variable.get():.2f}")
+        self.display_vars[param_id] = display_var
+        
         slider = ttk.Scale(
             slider_frame,
             from_=min_val,
             to=max_val,
             variable=variable,
             orient=tk.HORIZONTAL,
-            length=DIMENSIONS['slider_length']
+            length=DIMENSIONS['slider_length'],
+            command=lambda v, dv=display_var: dv.set(f"{float(v):.2f}")
         )
         slider.pack(side=tk.LEFT, fill=tk.X, expand=True)
         
         value_label = tk.Label(
             slider_frame,
-            textvariable=variable,
+            textvariable=display_var,
             font=FONTS['value'],
             bg=COLORS['header'],
             fg=COLORS['accent'],
@@ -206,17 +218,17 @@ class VanDerPolPage(tk.Frame):
         # Simular
         t, x, v = VanDerPolSimulator.simulate(x0, v0, mu, t_max)
         
-        # Graficar retrato de fase
+        # Graficar retrato de fase con estilo mejorado
         self.graph.clear()
-        self.graph.plot(x, v, 'b-', linewidth=1.5, label=f'μ={mu}')
-        self.graph.scatter([x[0]], [v[0]], color='green', s=100, marker='o', 
-                          label='Inicio', zorder=5)
-        self.graph.scatter([x[-1]], [v[-1]], color='red', s=100, marker='s', 
-                          label='Final', zorder=5)
+        self.graph.plot(x, v, color=GRAPH_STYLE['colors']['primary'], label=f'μ = {mu:.2f}')
+        self.graph.scatter([x[0]], [v[0]], color=GRAPH_STYLE['colors']['start_marker'], 
+                          s=100, marker='o', label='Inicio', zorder=5)
+        self.graph.scatter([x[-1]], [v[-1]], color=GRAPH_STYLE['colors']['end_marker'], 
+                          s=100, marker='s', label='Final', zorder=5)
         self.graph.set_labels(
             xlabel='x (Posición)',
             ylabel='dx/dt (Velocidad)',
-            title='Diagrama de Fase - Oscilador de Van der Pol'
+            title=f'Diagrama de Fase - Van der Pol (μ = {mu:.2f})'
         )
         self.graph.grid(True)
         self.graph.legend()

@@ -4,7 +4,7 @@ Página de simulación del Modelo Epidemiológico SIR.
 
 import tkinter as tk
 from tkinter import ttk
-from utils.styles import COLORS, FONTS, DIMENSIONS
+from utils.styles import COLORS, FONTS, DIMENSIONS, GRAPH_STYLE
 from utils.graph_helper import GraphCanvas
 from utils.simulator import SIRSimulator
 
@@ -25,6 +25,9 @@ class SIRPage(tk.Frame):
         self.beta_var = tk.DoubleVar(value=0.3)
         self.gamma_var = tk.DoubleVar(value=0.1)
         self.t_max_var = tk.DoubleVar(value=160.0)
+        
+        # Variables para mostrar valores formateados
+        self.display_vars = {}
         
         self.create_widgets()
     
@@ -58,7 +61,8 @@ class SIRPage(tk.Frame):
             control_frame,
             "Susceptibles Iniciales S(0)",
             self.S0_var,
-            0, 1000, 10
+            0, 1000, 10,
+            'S0'
         )
         
         # Población infectada inicial
@@ -66,7 +70,8 @@ class SIRPage(tk.Frame):
             control_frame,
             "Infectados Iniciales I(0)",
             self.I0_var,
-            0, 100, 1
+            0, 100, 1,
+            'I0'
         )
         
         # Población recuperada inicial
@@ -74,7 +79,8 @@ class SIRPage(tk.Frame):
             control_frame,
             "Recuperados Iniciales R(0)",
             self.R0_var,
-            0, 100, 1
+            0, 100, 1,
+            'R0'
         )
         
         # Tasa de contacto β
@@ -82,7 +88,8 @@ class SIRPage(tk.Frame):
             control_frame,
             "Tasa de Contacto β",
             self.beta_var,
-            0.1, 1.0, 0.05
+            0.1, 1.0, 0.05,
+            'beta'
         )
         
         # Tasa de recuperación γ
@@ -90,7 +97,8 @@ class SIRPage(tk.Frame):
             control_frame,
             "Tasa de Recuperación γ",
             self.gamma_var,
-            0.01, 0.5, 0.01
+            0.01, 0.5, 0.01,
+            'gamma'
         )
         
         # Tiempo máximo
@@ -98,7 +106,8 @@ class SIRPage(tk.Frame):
             control_frame,
             "Tiempo Máximo (días)",
             self.t_max_var,
-            50, 300, 10
+            50, 300, 10,
+            't_max'
         )
         
         # Botones
@@ -179,8 +188,8 @@ class SIRPage(tk.Frame):
         )
         r0_label.pack(pady=(0, 10))
     
-    def create_parameter_control(self, parent, label_text, variable, min_val, max_val, resolution):
-        """Crea un control de parámetro con slider."""
+    def create_parameter_control(self, parent, label_text, variable, min_val, max_val, resolution, param_id):
+        """Crea un control de parámetro con slider y valor formateado a 2 decimales."""
         container = tk.Frame(parent, bg=COLORS['header'])
         container.pack(pady=8, padx=20, fill=tk.X)
         
@@ -196,19 +205,24 @@ class SIRPage(tk.Frame):
         slider_frame = tk.Frame(container, bg=COLORS['header'])
         slider_frame.pack(fill=tk.X, pady=(5, 0))
         
+        # Variable para mostrar valor formateado
+        display_var = tk.StringVar(value=f"{variable.get():.2f}")
+        self.display_vars[param_id] = display_var
+        
         slider = ttk.Scale(
             slider_frame,
             from_=min_val,
             to=max_val,
             variable=variable,
             orient=tk.HORIZONTAL,
-            length=DIMENSIONS['slider_length']
+            length=DIMENSIONS['slider_length'],
+            command=lambda v, dv=display_var: dv.set(f"{float(v):.2f}")
         )
         slider.pack(side=tk.LEFT, fill=tk.X, expand=True)
         
         value_label = tk.Label(
             slider_frame,
-            textvariable=variable,
+            textvariable=display_var,
             font=FONTS['value'],
             bg=COLORS['header'],
             fg=COLORS['accent'],
@@ -248,13 +262,13 @@ class SIRPage(tk.Frame):
         # Calcular R₀
         R0_basic = beta / gamma
         
-        # Graficar
+        # Graficar con estilo mejorado
         self.graph.clear()
-        self.graph.plot(t, S, 'b-', linewidth=2, label='Susceptibles (S)')
-        self.graph.plot(t, I, 'r-', linewidth=2, label='Infectados (I)')
-        self.graph.plot(t, R, 'g-', linewidth=2, label='Recuperados (R)')
+        self.graph.plot(t, S, color=GRAPH_STYLE['colors']['primary'], label='Susceptibles (S)')
+        self.graph.plot(t, I, color=GRAPH_STYLE['colors']['secondary'], label='Infectados (I)')
+        self.graph.plot(t, R, color=GRAPH_STYLE['colors']['tertiary'], label='Recuperados (R)')
         
-        title_text = f'Modelo Epidemiológico SIR (R₀ = {R0_basic:.2f})'
+        title_text = f'Modelo SIR (R₀ = {R0_basic:.2f}, β = {beta:.2f}, γ = {gamma:.2f})'
         self.graph.set_labels(
             xlabel='Tiempo (días)',
             ylabel='Población',

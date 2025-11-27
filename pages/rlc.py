@@ -4,7 +4,7 @@ Página de simulación del Circuito RLC.
 
 import tkinter as tk
 from tkinter import ttk
-from utils.styles import COLORS, FONTS, DIMENSIONS
+from utils.styles import COLORS, FONTS, DIMENSIONS, GRAPH_STYLE
 from utils.graph_helper import GraphCanvas
 from utils.simulator import RLCSimulator
 
@@ -25,6 +25,9 @@ class RLCPage(tk.Frame):
         self.I0_var = tk.DoubleVar(value=0.0)
         self.Q0_var = tk.DoubleVar(value=0.0)
         self.t_max_var = tk.DoubleVar(value=0.5)
+        
+        # Variables para mostrar valores formateados
+        self.display_vars = {}
         
         self.create_widgets()
     
@@ -55,58 +58,44 @@ class RLCPage(tk.Frame):
         
         # Resistencia
         self.create_parameter_control(
-            control_frame,
-            "Resistencia R (Ω)",
-            self.R_var,
-            1, 100, 1
+            control_frame, "Resistencia R (Ω)",
+            self.R_var, 1, 100, 1, 'R'
         )
         
         # Inductancia
         self.create_parameter_control(
-            control_frame,
-            "Inductancia L (H)",
-            self.L_var,
-            0.01, 1.0, 0.01
+            control_frame, "Inductancia L (H)",
+            self.L_var, 0.01, 1.0, 0.01, 'L'
         )
         
         # Capacitancia
         self.create_parameter_control(
-            control_frame,
-            "Capacitancia C (F)",
-            self.C_var,
-            0.0001, 0.01, 0.0001
+            control_frame, "Capacitancia C (F)",
+            self.C_var, 0.0001, 0.01, 0.0001, 'C', decimals=4
         )
         
         # Voltaje
         self.create_parameter_control(
-            control_frame,
-            "Voltaje V₀ (V)",
-            self.V0_var,
-            0, 50, 1
+            control_frame, "Voltaje V₀ (V)",
+            self.V0_var, 0, 50, 1, 'V0'
         )
         
         # Corriente inicial
         self.create_parameter_control(
-            control_frame,
-            "Corriente Inicial I₀ (A)",
-            self.I0_var,
-            0, 5, 0.1
+            control_frame, "Corriente Inicial I₀ (A)",
+            self.I0_var, 0, 5, 0.1, 'I0'
         )
         
         # Carga inicial
         self.create_parameter_control(
-            control_frame,
-            "Carga Inicial Q₀ (C)",
-            self.Q0_var,
-            0, 0.1, 0.001
+            control_frame, "Carga Inicial Q₀ (C)",
+            self.Q0_var, 0, 0.1, 0.001, 'Q0', decimals=3
         )
         
         # Tiempo máximo
         self.create_parameter_control(
-            control_frame,
-            "Tiempo Máximo (s)",
-            self.t_max_var,
-            0.1, 2.0, 0.1
+            control_frame, "Tiempo Máximo (s)",
+            self.t_max_var, 0.1, 2.0, 0.1, 't_max'
         )
         
         # Botones
@@ -168,8 +157,8 @@ class RLCPage(tk.Frame):
         )
         eq2.pack(pady=(0, 10))
     
-    def create_parameter_control(self, parent, label_text, variable, min_val, max_val, resolution):
-        """Crea un control de parámetro con slider."""
+    def create_parameter_control(self, parent, label_text, variable, min_val, max_val, resolution, param_id, decimals=2):
+        """Crea un control de parámetro con slider y valor formateado."""
         container = tk.Frame(parent, bg=COLORS['header'])
         container.pack(pady=6, padx=20, fill=tk.X)
         
@@ -185,23 +174,28 @@ class RLCPage(tk.Frame):
         slider_frame = tk.Frame(container, bg=COLORS['header'])
         slider_frame.pack(fill=tk.X, pady=(3, 0))
         
+        # Variable para mostrar valor formateado
+        display_var = tk.StringVar(value=f"{variable.get():.{decimals}f}")
+        self.display_vars[param_id] = display_var
+        
         slider = ttk.Scale(
             slider_frame,
             from_=min_val,
             to=max_val,
             variable=variable,
             orient=tk.HORIZONTAL,
-            length=DIMENSIONS['slider_length']
+            length=DIMENSIONS['slider_length'],
+            command=lambda v, dv=display_var, d=decimals: dv.set(f"{float(v):.{d}f}")
         )
         slider.pack(side=tk.LEFT, fill=tk.X, expand=True)
         
         value_label = tk.Label(
             slider_frame,
-            textvariable=variable,
+            textvariable=display_var,
             font=FONTS['value'],
             bg=COLORS['header'],
             fg=COLORS['accent'],
-            width=8
+            width=10
         )
         value_label.pack(side=tk.LEFT, padx=(10, 0))
     
@@ -235,31 +229,45 @@ class RLCPage(tk.Frame):
         # Simular
         t, I, Q, V = RLCSimulator.simulate(I0, Q0, R, L, C, V0, t_max)
         
-        # Graficar corriente y voltaje
+        # Graficar corriente y voltaje con estilo mejorado
         self.graph.clear()
         
         # Crear dos ejes Y
         ax1 = self.graph.ax
         ax2 = ax1.twinx()
         
+        # Aplicar estilo a ax1
+        ax1.spines['top'].set_visible(False)
+        ax1.spines['left'].set_color(GRAPH_STYLE['colors']['primary'])
+        ax1.spines['bottom'].set_color('#bdc3c7')
+        
         # Graficar corriente en eje izquierdo
-        line1 = ax1.plot(t, I, 'b-', linewidth=2, label='Corriente I(t)')
-        ax1.set_xlabel('Tiempo (s)')
-        ax1.set_ylabel('Corriente (A)', color='b')
-        ax1.tick_params(axis='y', labelcolor='b')
+        line1 = ax1.plot(t, I, color=GRAPH_STYLE['colors']['primary'], 
+                        linewidth=GRAPH_STYLE['linewidth'], label='Corriente I(t)')
+        ax1.set_xlabel('Tiempo (s)', fontsize=GRAPH_STYLE['label_fontsize'], 
+                      color='#2c3e50', fontweight='medium')
+        ax1.set_ylabel('Corriente (A)', color=GRAPH_STYLE['colors']['primary'],
+                      fontsize=GRAPH_STYLE['label_fontsize'], fontweight='medium')
+        ax1.tick_params(axis='y', labelcolor=GRAPH_STYLE['colors']['primary'])
         
         # Graficar voltaje en eje derecho
-        line2 = ax2.plot(t, V, 'r-', linewidth=2, label='Voltaje V_C(t)')
-        ax2.set_ylabel('Voltaje (V)', color='r')
-        ax2.tick_params(axis='y', labelcolor='r')
+        line2 = ax2.plot(t, V, color=GRAPH_STYLE['colors']['secondary'], 
+                        linewidth=GRAPH_STYLE['linewidth'], label='Voltaje V_C(t)')
+        ax2.set_ylabel('Voltaje (V)', color=GRAPH_STYLE['colors']['secondary'],
+                      fontsize=GRAPH_STYLE['label_fontsize'], fontweight='medium')
+        ax2.tick_params(axis='y', labelcolor=GRAPH_STYLE['colors']['secondary'])
+        ax2.spines['right'].set_color(GRAPH_STYLE['colors']['secondary'])
+        ax2.spines['top'].set_visible(False)
         
         # Combinar leyendas
         lines = line1 + line2
         labels = [l.get_label() for l in lines]
-        ax1.legend(lines, labels, loc='upper right')
+        ax1.legend(lines, labels, loc='upper right', fontsize=GRAPH_STYLE['legend_fontsize'],
+                  framealpha=0.9, edgecolor='#bdc3c7')
         
-        ax1.set_title('Circuito RLC Serie')
-        ax1.grid(True, alpha=0.3)
+        ax1.set_title(f'Circuito RLC (R = {R:.2f}Ω, L = {L:.2f}H, C = {C:.4f}F)', 
+                     fontsize=GRAPH_STYLE['title_fontsize'], color='#2c3e50', fontweight='bold')
+        ax1.grid(True, alpha=GRAPH_STYLE['grid_alpha'], linestyle='--', color='#bdc3c7')
         
         self.graph.tight_layout()
         self.graph.canvas.draw()

@@ -3,6 +3,8 @@ Configuración de estilos, colores y fuentes para la aplicación.
 Paleta moderna con enfoque en accesibilidad y experiencia de usuario.
 """
 
+import tkinter as tk
+
 # Paleta de colores profesional - Azul y Grises
 COLORS = {
     # Fondos principales
@@ -123,6 +125,59 @@ DIMENSIONS = {
     'card_max_width': 350,             # Ancho máximo tarjeta
     'panel_min_height': 100,           # Alto mínimo panel
 }
+
+# Configuración de gráficos mejorada
+GRAPH_STYLE = {
+    'linewidth': 2.5,
+    'grid_alpha': 0.3,
+    'marker_size': 80,
+    'title_fontsize': 14,
+    'label_fontsize': 11,
+    'legend_fontsize': 10,
+    'colors': {
+        'primary': '#3498db',
+        'secondary': '#e74c3c', 
+        'tertiary': '#27ae60',
+        'quaternary': '#9b59b6',
+        'start_marker': '#27ae60',
+        'end_marker': '#e74c3c',
+    }
+}
+
+
+def format_slider_value(value, decimals=2):
+    """
+    Formatea el valor del slider a un número específico de decimales.
+    
+    Args:
+        value: Valor numérico a formatear
+        decimals: Número de decimales (default 2)
+    
+    Returns:
+        String formateado
+    """
+    return f"{float(value):.{decimals}f}"
+
+
+class FormattedVar(tk.DoubleVar):
+    """
+    Variable de Tkinter que formatea automáticamente su valor a 2 decimales.
+    """
+    def __init__(self, master=None, value=0.0, decimals=2, **kwargs):
+        super().__init__(master, value, **kwargs)
+        self._decimals = decimals
+        self._raw_value = value
+    
+    def set(self, value):
+        self._raw_value = float(value)
+        super().set(round(self._raw_value, self._decimals))
+    
+    def get(self):
+        return self._raw_value
+    
+    def get_formatted(self):
+        return f"{self._raw_value:.{self._decimals}f}"
+
 
 # Iconos y emojis organizados por categoría
 ICONS = {
